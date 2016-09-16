@@ -1,0 +1,10 @@
+{
+    "name": "echowine/database",
+    "version": "master",
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4" : {
+            "CoreWine\\DataBase\\" : "src/"
+        }
+    }
+}
