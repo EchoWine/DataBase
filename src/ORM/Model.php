@@ -3,7 +3,7 @@
 namespace CoreWine\DataBase\ORM;
 
 use CoreWine\DataBase\ORM\Response as Response;
-use CoreWine\Exceptions as Exceptions;
+use CoreWine\DataBase\ORM\Exceptions as Exceptions;
 
 class Model{
 
