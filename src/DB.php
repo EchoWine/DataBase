@@ -6,6 +6,8 @@ use PDO;
 use PDOStatement;
 use PDOException;
 use CoreWine\DataBase\Exceptions;
+use Closure;
+use Exception;
 
 /**
  * Database, permits to handle connections and calls to DataBase with PDO
@@ -67,6 +69,9 @@ class DB{
 
 		self::$config = $cfg;
 		
+
+		self::checkConfig($cfg);
+
 		try{
 
 			self::$con = new PDO(
@@ -100,6 +105,31 @@ class DB{
 		static::$log = [];
 	}
 	
+	public static function checkConfig($cfg){
+
+		switch($cfg['driver']){
+
+			case 'mysql':
+
+				if(!extension_loaded('pdo_mysql'))
+					throw new \Exception("You must have pdo_mysql installed");
+
+			break;
+
+			default:
+
+				throw new \Exception("The driver {$cfg['driver']} isn't valid");
+
+			break;
+		}
+
+
+		if(!preg_match("/^([a-zA-Z0-9_]*)$/",$cfg['database'])){
+			throw new \Exception("Database name '{$cfg['database']}' isn't valid");
+		}
+	
+	}	
+
 	/**
 	 * @return SQL
 	 */
