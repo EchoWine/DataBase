@@ -24,11 +24,10 @@ class Book extends Model{
         $schema -> id();
 
         # Door
-        $schema -> string('door')
+        $schema -> string('title')
                 -> maxLength(128)
                 -> minLength(3)
-                -> required()
-                -> default('Opened');
+                -> required();
 
     }
 }
