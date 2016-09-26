@@ -4,7 +4,8 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4" : {
-            "CoreWine\\DataBase\\" : "src/"
+            "CoreWine\\DataBase\\" : "src/",
+           "CoreWine\\DataBase\\Test\\": "tests/"
         }
     }
 }

@@ -3,10 +3,10 @@
 use PHPUnit\Framework\TestCase;
 
 use CoreWine\DataBase\DB;
+use CoreWine\DataBase\Test\Book;
 
 class BasicTest extends TestCase{
    
-
     public function testConnection(){
 
     	DB::connect([
@@ -161,5 +161,10 @@ class BasicTest extends TestCase{
     	DB::query("TRUNCATE users");
 
     	# --------------------------------------------------------------------------
+    }
+
+    public function testBasicORM(){
+        
+        $book = new Book();
     }
 }
