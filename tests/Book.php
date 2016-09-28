@@ -20,15 +20,17 @@ class Book extends Model{
      */
     public static function setSchemaFields($schema){
 
-        # ID
+    
         $schema -> id();
-
-        # Door
+        
         $schema -> string('title')
                 -> maxLength(128)
                 -> minLength(3)
                 -> required();
 
+        $schema -> toOne(Author::class,'author');
+        $schema -> toOne(Author::class,'author_second_by_id','author_second_id');
+        $schema -> toOne(Author::class,'author_second_by_name','author_second_name','name');
     }
 }
 

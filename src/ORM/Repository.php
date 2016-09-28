@@ -186,7 +186,7 @@ class Repository extends QueryBuilder{
 					if(!empty($result[$field -> getColumn()])){
 						if(!$this -> isObjectORM($field -> getRelation(),$result[$field -> getColumn()])){
 							
-							$relation[$field -> getRelation()][$field -> getRelation()::schema() -> getPrimaryColumn()][$result[$field -> getColumn()]] = $result[$field -> getColumn()];
+							$relation[$field -> getRelation()][$field -> getRelationColumn()][$result[$field -> getColumn()]] = $result[$field -> getColumn()];
 						}
 					}
 				}
@@ -464,7 +464,7 @@ class Repository extends QueryBuilder{
 					$field -> getObjectSchema() -> getTable(),
 					$field -> getColumn(),
 					$field -> getRelation()::schema() -> getTable(),
-					$field -> getRelation()::schema() -> getPrimaryColumn()
+					$field -> getRelationColumn()
 				);
 				
 				# Only if this is a new relation, that isn't already used to build join query

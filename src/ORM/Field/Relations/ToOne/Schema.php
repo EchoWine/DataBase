@@ -12,13 +12,30 @@ class Schema extends FieldSchema{
 	public $relation;
 
 	/**
+	 * Name of column relation
+	 */
+	public $relation_column;
+
+	/**
 	 * Set relation
 	 *
 	 * @param String $relation
 	 */
-	public function relation($relation){
+	public function relation($relation,$column = null,$relation_column = null){
 		$this -> relation = $relation;
-		$this -> column = $this -> getName()."_".$this -> getRelation()::schema() -> getPrimaryField() -> getColumn();
+
+
+		if($relation_column == null){
+			$relation_column = $relation::schema() -> getPrimaryField() -> getColumn();
+		}
+
+		if($column == null){
+			$column = $this -> getName()."_".$relation_column;
+		}
+
+		$this -> column = $column;
+		$this -> relation_column = $relation_column;
+
 		return $this;
 	}
 
@@ -30,21 +47,30 @@ class Schema extends FieldSchema{
 	}
 
 	/**
+	 * Get relation
+	 */
+	public function getRelationColumn(){
+		return $this -> relation_column;
+	}
+
+
+	/**
 	 * Construct
 	 */
-	public function __construct($relation = null,$name = null){
+	public function __construct($relation = null,$name = null,$column = null,$relation_column = null){
 		$this -> name = $name;
 		$this -> label = $name;
-		$this -> column = $name;
-		$this -> relation($relation);
+
+
+		$this -> relation($relation,$column,$relation_column);
 		return $this;
 	}
 
 	/**
 	 * New
 	 */
-	public static function factory($relation = null,$name = null){
-		return new static($relation,$name);
+	public static function factory($relation = null,$name = null,$column = null,$relation_column = null){
+		return new static($relation,$name,$column,$relation_column);
 	}
 }
 

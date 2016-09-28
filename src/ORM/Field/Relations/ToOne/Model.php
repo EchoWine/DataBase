@@ -21,18 +21,21 @@ class Model extends FieldModel{
 	 * @return mixed
 	 */
 	public function setValueRawFromRepository($value_raw,$persist = false,$relations = []){
-		
 		$value_raw = isset($value_raw[$this -> getSchema() -> getColumn()]) ? $value_raw[$this -> getSchema() -> getColumn()] : null;
 
 		$this -> value_raw = $value_raw;
+		$value = null;
+		
+		if(isset($relations[$this -> getSchema() -> getRelation()])){
 
-		if(isset($relations[$this -> getSchema() -> getRelation()]) && isset($relations[$this -> getSchema() -> getRelation()][$value_raw])){
-
-			$value = $relations[$this -> getSchema() -> getRelation()][$value_raw];
+			foreach($relations[$this -> getSchema() -> getRelation()] as $rel){
+				if($rel -> getFieldByColumn($this -> getSchema() -> getRelationColumn()) == $value_raw){
+					$value = $rel;
+					break;
+				}
+			}
 		}
-		else
-			$value = null;
-
+		
 		if(!$persist){
 			
 			$this -> setValue($this -> parseRawToValue($value),false);
@@ -51,7 +54,7 @@ class Model extends FieldModel{
 		if($this -> getLastAliasCalled() == $this -> getSchema() -> getName()){
 
 			if($value_raw !== null)
-				$value_raw = $value_raw -> getPrimaryField() -> getValue();
+				$value_raw = $value_raw -> getFieldByColumn($this -> getSchema() -> getRelationColumn()) -> getValue();
 		}
 		
 		$this -> value_raw = $value_raw;
