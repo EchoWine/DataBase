@@ -153,7 +153,12 @@ class Schema{
 	 * @return ORM\Field\Schema\Field
 	 */
 	public function getPrimaryField(){
-		return $this -> getField($this -> primary);
+		foreach($this -> getFields() as $field){
+			if($field -> getPrimary())
+				return $field;
+		}
+
+		return null;
 	}
 
 	/**
@@ -162,7 +167,7 @@ class Schema{
 	 * @return string
 	 */
 	public function getPrimaryColumn(){
-		return $this -> getField($this -> primary) -> getColumn();
+		return $this -> getPrimaryField() -> getColumn();
 	}
 
 

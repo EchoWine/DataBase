@@ -3,9 +3,10 @@
 use PHPUnit\Framework\TestCase;
 
 use CoreWine\DataBase\DB;
-use CoreWine\DataBase\Test\Book;
-use CoreWine\DataBase\Test\Author;
 use CoreWine\DataBase\ORM\SchemaBuilder;
+use CoreWine\DataBase\Test\Model\Book;
+use CoreWine\DataBase\Test\Model\Author;
+use CoreWine\DataBase\Test\Model\Isbn;
 
 class ORMTest extends TestCase{
    
@@ -38,6 +39,7 @@ class ORMTest extends TestCase{
 
         Author::truncate();
         Book::truncate();
+        Isbn::truncate();
 
         $book = new Book();
         $book -> title = "The Hitchhiker's Guide to the Galaxy";
@@ -49,18 +51,19 @@ class ORMTest extends TestCase{
         $author -> name = 'Ban';
         $author -> save();
 
-        $book -> author = $author;
-        $book -> author_second_by_id = $author;
-        $book -> author_second_by_name = $author;
+        $isbn = new Isbn();
+        $isbn -> code = '978-3-16-148410-0';
+        $isbn -> save();
 
+        $book -> author = $author;
+        $book -> isbn = $isbn;
 
         $book -> save();
 
         $book = Book::first();
-
+        
         $this -> assertEquals($book -> author -> name,"Ban");
-        $this -> assertEquals($book -> author_second_by_id -> name,"Ban");
-        $this -> assertEquals($book -> author_second_by_name -> name,"Ban");
+        $this -> assertEquals($book -> isbn -> code,"978-3-16-148410-0");
 
     }
 }

@@ -33,6 +33,10 @@ class Schema extends FieldSchema{
 			$column = $this -> getName()."_".$relation_column;
 		}
 
+		if($this -> getName() == $column){
+			throw new \Exception("Column must have a different name than field name");
+		}
+
 		$this -> column = $column;
 		$this -> relation_column = $relation_column;
 

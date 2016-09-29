@@ -115,6 +115,7 @@ class Model{
 	 */
 	public function __call($method,$arguments){
 
+
 		if($this -> isField($method))
 			return $this -> getField($method);
 		

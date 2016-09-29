@@ -1,17 +1,17 @@
 <?php
 
-namespace CoreWine\DataBase\Test;
+namespace CoreWine\DataBase\Test\Model;
 
 use CoreWine\DataBase\ORM\Model;
 
-class Author extends Model{
+class Isbn extends Model{
 
     /**
      * Table name
      *
      * @var
      */
-    public static $table = 'authors';
+    public static $table = 'isbn';
 
     /**
      * Set schema fields
@@ -20,12 +20,9 @@ class Author extends Model{
      */
     public static function setSchemaFields($schema){
 
-        # ID
-        $schema -> id();
+        $schema -> string('code') -> primary();
 
-        # Door
-        $schema -> string('name')
-                -> required();
+        $schema -> string('type');
 
     }
 }

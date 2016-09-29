@@ -494,6 +494,10 @@ class Schema{
 
 		if(!$this -> required)
 			$col -> null();
+
+		if($this -> primary)
+			$col -> primary();
+		
 	}
 
 	/**

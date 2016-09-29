@@ -21,23 +21,29 @@ class Model extends FieldModel{
 	 * @return mixed
 	 */
 	public function setValueRawFromRepository($value_raw,$persist = false,$relations = []){
-		$value_raw = isset($value_raw[$this -> getSchema() -> getColumn()]) ? $value_raw[$this -> getSchema() -> getColumn()] : null;
-
-		$this -> value_raw = $value_raw;
-		$value = null;
 		
-		if(isset($relations[$this -> getSchema() -> getRelation()])){
+		$column = $this -> getSchema() -> getColumn();
+		$relation = $this -> getSchema() -> getRelation();
+		$relation_column = $this -> getSchema() -> getRelationColumn();
 
-			foreach($relations[$this -> getSchema() -> getRelation()] as $rel){
-				if($rel -> getFieldByColumn($this -> getSchema() -> getRelationColumn()) == $value_raw){
+		$value = null;
+
+		$this -> value_raw = null;
+
+		if(isset($value_raw[$column]))
+			$this -> value_raw = $value_raw[$column];
+
+		if(isset($relations[$relation])){
+
+			foreach($relations[$relation] as $rel){
+				if($rel -> getFieldByColumn($relation_column) -> getValue() == $this -> value_raw){
 					$value = $rel;
 					break;
 				}
 			}
 		}
-		
+
 		if(!$persist){
-			
 			$this -> setValue($this -> parseRawToValue($value),false);
 			$this -> persist = $persist;
 		}

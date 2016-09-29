@@ -1,6 +1,6 @@
 <?php
 
-namespace CoreWine\DataBase\Test;
+namespace CoreWine\DataBase\Test\Model;
 
 use CoreWine\DataBase\ORM\Model;
 
@@ -29,8 +29,7 @@ class Book extends Model{
                 -> required();
 
         $schema -> toOne(Author::class,'author');
-        $schema -> toOne(Author::class,'author_second_by_id','author_second_id');
-        $schema -> toOne(Author::class,'author_second_by_name','author_second_name','name');
+        $schema -> toOne(Isbn::class,'isbn','isbn_code','code');
     }
 }
 
