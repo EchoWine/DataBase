@@ -1,0 +1,6 @@
+- More tests
+- More fields
+- ManyToMany ?
+- Delete column not defined in schema ? (config)
+- Cascade operation
+- Improve array rapresentation (with/without relations)
