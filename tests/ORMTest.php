@@ -23,10 +23,6 @@ class ORMTest extends TestCase{
 			'alter_schema' => true,
     	]);
 
-    }
-
-    public function testBasicORM(){
-
         SchemaBuilder::setFields([
             'toOne' => CoreWine\DataBase\ORM\Field\Relations\ToOne\Schema::class,
             'toMany' => CoreWine\DataBase\ORM\Field\Relations\ToMany\Schema::class,
@@ -40,6 +36,9 @@ class ORMTest extends TestCase{
         Author::truncate();
         Book::truncate();
         Isbn::truncate();
+    }
+
+    public function testBasicRelations(){
 
         $book = new Book();
         $book -> title = "The Hitchhiker's Guide to the Galaxy";
@@ -65,5 +64,29 @@ class ORMTest extends TestCase{
         $this -> assertEquals($book -> author -> name,"Ban");
         $this -> assertEquals($book -> isbn -> code,"978-3-16-148410-0");
 
+
+        $book -> author = $author;
+        $book -> author -> name = 'Robinson';
+        $this -> assertEquals($book -> author -> name,"Robinson");
+    }
+
+    public function testAdvancedRelations(){
+
+        $author = Author::first();
+
+        $book = new Book;
+        $book -> title = "Eragon";
+        $book -> isbn = new Isbn();
+        $book -> isbn -> code = "978-4-16-148410-0";
+        $book -> isbn -> save();
+
+        $author -> books -> add($book);
+        $author -> books -> remove(Book::first());
+
+        # Adding the same entity doesn't work (correct)
+        $author -> books[] = $book;
+        $author -> books -> save();
+
+        
     }
 }

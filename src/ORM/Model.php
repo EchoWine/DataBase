@@ -402,6 +402,7 @@ class Model{
 
 		$schema = static::schema();
 
+
 		foreach($schema -> getFields() as $name => $field){
 
 			$value = isset($values[$name]) ? $values[$name] : null;
@@ -562,6 +563,7 @@ class Model{
 	public function getFieldsToPersist(){
 		$fields = [];
 		foreach($this -> getFields() as $name => $field){
+			$field -> checkPersist();
 			if($field -> getPersist()){
 				$fields[$name] = $field;
 			}
@@ -648,9 +650,7 @@ class Model{
 			$values = $this -> getValuesUpdate($fields);
 
 		}
-
-
-		$validation = static::validate($values,$this);
+		$validation = static::validateAll($values,$this);
 		static::setLastValidate($validation);
 
 		if(!empty($validation))

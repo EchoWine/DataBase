@@ -62,12 +62,11 @@ class Schema extends FieldSchema{
 		return $this -> reference;
 	}
 
-
 	/**
 	 * Alter
 	 */
 	public function alter($table){
-		
+
 	}
 
 	/**
@@ -76,7 +75,6 @@ class Schema extends FieldSchema{
 	public function __construct($relation = null,$name = null,$reference = null){
 		$this -> name = $name;
 		$this -> label = $name;
-		$this -> column = $name;
 		$this -> relation($relation);
 		$this -> reference($reference);
 		return $this;

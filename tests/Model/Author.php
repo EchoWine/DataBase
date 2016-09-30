@@ -20,13 +20,12 @@ class Author extends Model{
      */
     public static function setSchemaFields($schema){
 
-        # ID
         $schema -> id();
 
-        # Door
         $schema -> string('name')
                 -> required();
 
+        $schema -> toMany(Book::class,'books','author_id');
     }
 }
 

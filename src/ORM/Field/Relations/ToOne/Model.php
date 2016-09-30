@@ -6,10 +6,21 @@ use CoreWine\DataBase\ORM\Field\Field\Model as FieldModel;
 
 class Model extends FieldModel{
 
+	/**
+	 * Last value relation 
+	 *
+	 * @var mixed
+	 */
+	protected $last_value_relation = null;
+	/**
+	 * Is the value updated
+	 *
+	 * @var bool
+	 */
 	public $value_updated = true;
 
 	/**
-	 * Set Model
+	 * Initialze the alis
 	 */
 	public function iniAlias(){
 		$this -> alias = [$this -> getSchema() -> getColumn(),$this -> getSchema() -> getName()];
@@ -18,9 +29,15 @@ class Model extends FieldModel{
 	/**
 	 * Set the value raw by repository
 	 *
+	 * Given $row and $relations this method must set the current value of field
+	 *
+	 * @param array $row list of all columns value retrieved in previous query
+	 * @param bool $persist
+	 * @param array $relation list of all results retrieved with previous joins query
+	 *
 	 * @return mixed
 	 */
-	public function setValueRawFromRepository($value_raw,$persist = false,$relations = []){
+	public function setValueRawFromRepository($row,$persist = false,$relations = []){
 		
 		$column = $this -> getSchema() -> getColumn();
 		$relation = $this -> getSchema() -> getRelation();
@@ -30,8 +47,8 @@ class Model extends FieldModel{
 
 		$this -> value_raw = null;
 
-		if(isset($value_raw[$column]))
-			$this -> value_raw = $value_raw[$column];
+		if(isset($row[$column]))
+			$this -> value_raw = $row[$column];
 
 		if(isset($relations[$relation])){
 
@@ -99,6 +116,9 @@ class Model extends FieldModel{
 
 		$this -> value = $value;
 
+		if($value)
+			$this -> last_value_relation = $value -> {$this -> getSchema() -> getRelationColumn()};
+
 		if($persist){
 			$this -> setValueRawToRepository($this -> parseValueToRaw($value),true);
 			$this -> persist = $persist;
@@ -146,6 +166,31 @@ class Model extends FieldModel{
 	 */
 	public function getNameToArray(){
 		return $this -> getSchema() -> getColumn();
+	}
+
+	/**
+	 * Check persist
+	 *
+	 * Re-check the current status of persist. This function is called before save() to check which field put in query
+	 */
+	public function checkPersist(){
+
+		if(!$this -> getValue())
+			return;
+
+		if(!($this -> getValue() instanceof \CoreWine\DataBase\ORM\Model))
+			return;
+
+		$field = $this -> getSchema() -> getRelationColumn();
+		$current = $this -> getValue() -> $field;
+
+		# The primary key may be changed
+		if($current != $this -> last_value_relation){
+
+			# Re-Set value
+			$this -> setValue($this -> getValue());
+			$this -> persist = true;
+		}
 	}
 
 }

@@ -210,9 +210,9 @@ class Model{
 	 *
 	 * @return mixed
 	 */
-	public function setValueRawFromRepository($value_raw,$persist = false,$relations = []){
+	public function setValueRawFromRepository($row,$persist = false,$relations = []){
 		
-		$value_raw = isset($value_raw[$this -> getSchema() -> getColumn()]) ? $value_raw[$this -> getSchema() -> getColumn()] : null;
+		$value_raw = isset($row[$this -> getSchema() -> getColumn()]) ? $row[$this -> getSchema() -> getColumn()] : null;
 
 		$this -> setValueRaw($value_raw);
 
@@ -399,6 +399,12 @@ class Model{
 		return $repository -> where($this -> getSchema() -> getColumn(),$this -> getValueRaw());
 	}
 
+	/**
+	 * Check persist
+	 *
+	 * Re-check the current status of persist. This function is called before save() to check which field put in query
+	 */
+	public function checkPersist(){}
 
 }
 ?>

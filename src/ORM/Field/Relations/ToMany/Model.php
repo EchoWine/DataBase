@@ -86,6 +86,8 @@ class Model extends FieldModel{
 	 */
 	public function save(){
 		foreach($this -> getValueToSave() as $value){
+			$field = $this -> getSchema() -> getReference();
+			$value -> {$field} = $this -> getModel() -> getPrimaryField() -> getValue();
 			$value -> save();
 		}
 
@@ -96,17 +98,23 @@ class Model extends FieldModel{
 	 *
 	 * @return mixed
 	 */
-	public function setValueRawFromRepository($value_raw,$persist = false,$relations = []){
+	public function setValueRawFromRepository($row,$persist = false,$relations = []){
 		
+		# In this case $row and $value_raw is useless, because the entire value is retrieved using relations
 		$this -> value_raw = null;
+
 		$value = [];
 
-		if(isset($relations[$this -> getSchema() -> getRelation()])){
-			foreach($relations[$this -> getSchema() -> getRelation()] as $result){
+		$relation = $this -> getSchema() -> getRelation();
+
+		if(isset($relations[$relation])){
+
+			foreach($relations[$relation] as $result){
 
 				foreach($result -> getFields() as $field){
 
-					if($field -> getSchema() instanceof \CoreWine\DataBase\ORM\Field\Schema\ModelField){
+					if($field -> getSchema() -> getType() == 'to_one'){
+
 
 						if(!$this -> getModel() -> getPrimaryField()){
 							print_r($this -> getModel());
@@ -114,13 +122,7 @@ class Model extends FieldModel{
 						}
 
 						# Of all results take only with a relation, with a column reference, with a value of primary == reference
-						if(
-							$field -> getSchema() -> getRelation() == $this -> getModel() && 
-							$field -> getSchema() -> getColumn() == $this -> getSchema() -> getReference() &&
-							$result -> getField($this -> getSchema() -> getReference()) -> getValueRaw() == 
-							$this -> getModel() -> getPrimaryField() -> getValue()
-						){
-							
+						if($this -> isThisRelation($field,$result)){
 							$value[$result -> getPrimaryField() -> getValue()] = $result;
 						}
 					}
@@ -136,6 +138,35 @@ class Model extends FieldModel{
 	}
 
 	/**
+	 * Given the field and the result return if this is the relation
+	 * In order to connect two entities "toMany" i need to search all fields
+	 * Search for the field that have column name == $reference and have the value raw same as this primary value 
+	 *
+	 * @param $field is the field of the Model that maybe is connected
+	 * @param $result
+	 *
+	 * @return bool
+	 */
+	public function isThisRelation($field,$result){
+		
+		# The name of column of relation
+		$reference = $this -> getSchema() -> getReference();
+
+		# The primary field of this model
+		$model_primary = $this -> getModel() -> getPrimaryField();
+
+		# Column name of the $field
+		$field_column = $field -> getSchema() -> getColumn();
+		
+		# The relational field of the result
+		$result_reference = $result -> getField($reference);
+
+		# Example
+		# "author_id" () == "author_id" && 1 == 1
+		return $reference == $field_column && $model_primary -> getValueRaw() == $result_reference -> getValueRaw();					
+	}
+
+	/**
 	 * Set the value raw
 	 *
 	 * @return mixed
@@ -148,6 +179,19 @@ class Model extends FieldModel{
 			$this -> setValue($this -> parseRawToValue($value_raw),false);
 			$this -> persist = $persist;
 		}
+	}
+
+	/**
+	 * Parse the value from raw to value
+	 *
+	 * @param mixed $value
+	 *
+	 * @return mixed
+	 */
+	public function parseRawToValue($value){
+		$c = new Collection($value);
+		$c -> setModel($this);
+		return $c;
 	}
 
 	/**
