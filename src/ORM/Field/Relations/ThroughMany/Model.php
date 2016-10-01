@@ -29,7 +29,6 @@ class Model extends FieldModel{
 	protected $last_value_relation = [];
 
 
-
 	/**
 	 * Add a model to collection if isn't already added
 	 *
@@ -105,7 +104,10 @@ class Model extends FieldModel{
 	public function remove($model){
 		foreach($this -> getValue() as $n => $_model){
 			if($model -> isEqual($_model)){
+				echo "remove";
+				echo $_model;
 				$_model -> getFieldByColumn($this -> getSchema() -> getReference()) -> setValue(null);
+				echo $_model;
 				$this -> addValueToDelete($model);
 				$this -> removeValue($n);
 			}

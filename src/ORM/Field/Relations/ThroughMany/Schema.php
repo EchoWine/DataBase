@@ -87,40 +87,6 @@ class Schema extends FieldSchema{
 		return new static($relation,$name,$reference);
 	}
 
-	/**
-	 * Resolve relations
-	 *
-	 * @param array $result
-	 * @param Repository $repository
-	 *
-	 * @return array
-	 */
-	public function resolveRelations(&$results,&$relation,$repository){
-
-
-
-		$field_relation = null;
-
-		# Search the field that is relationated with this schema
-
-		foreach($this -> getRelation()::schema() -> getFields() as $_field_relation){
-			if($_field_relation -> getType() == 'to_one'){
-				if($_field_relation -> getRelation() == $repository -> getModel() && $this -> getReference() == $_field_relation -> getColumn()){
-					
-					$field_relation = $_field_relation;
-				}
-			}
-		}
-
-		if($field_relation !== null){
-			foreach($results as $result){
-				
-				$relation[$this -> getRelation()][$field_relation -> getColumn()][$result[$this -> getObjectSchema() -> getPrimaryColumn()]] = $result[$this -> getObjectSchema() -> getPrimaryColumn()];
-			}
-		}
-
-			
-	}
 }
 
 ?>

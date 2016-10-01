@@ -176,47 +176,14 @@ class Repository extends QueryBuilder{
 	 * @return array
 	 */
 	public function retrieveRelations($results,$schema,$relations = []){
-		$relation = [];
+
 		foreach($schema -> getFields() as $field){
-			
-			# N -> 1 || 1 -> 1
 
-			if($field -> getType() == 'to_one'){
-				foreach($results as $result){
-					if(!empty($result[$field -> getColumn()])){
-						if(!$this -> isObjectORM($field -> getRelation(),$result[$field -> getColumn()])){
-							
-							$relation[$field -> getRelation()][$field -> getRelationColumn()][$result[$field -> getColumn()]] = $result[$field -> getColumn()];
-						}
-					}
-				}
-			}
+			$field -> resolveRelations($results,$relations,$this);
 
-			# 1 -> N
-			if($field -> getType() == 'to_many'){
-				
-				$field_relation = null;
-
-				# Search the field that is relationated with this schema
-
-				foreach($field -> getRelation()::schema() -> getFields() as $_field_relation){
-					if($_field_relation instanceof \CoreWine\DataBase\ORM\Field\Schema\ModelField){
-						if($_field_relation -> getRelation() == $this -> getModel() && $field -> getReference() == $_field_relation -> getColumn()){
-							
-							$field_relation = $_field_relation;
-						}
-					}
-				}
-				if($field_relation !== null){
-					foreach($results as $result){
-						
-						$relation[$field -> getRelation()][$field_relation -> getColumn()][$result[$schema -> getPrimaryColumn()]] = $result[$schema -> getPrimaryColumn()];
-					}
-				}
-			}
 		}
 
-		return array_merge($relation,$relations);
+		return $relations;
 	}
 
 	/**

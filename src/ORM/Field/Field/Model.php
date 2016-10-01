@@ -406,5 +406,7 @@ class Model{
 	 */
 	public function checkPersist(){}
 
+
+
 }
 ?>

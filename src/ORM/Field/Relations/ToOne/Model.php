@@ -12,6 +12,7 @@ class Model extends FieldModel{
 	 * @var mixed
 	 */
 	protected $last_value_relation = null;
+
 	/**
 	 * Is the value updated
 	 *
@@ -79,7 +80,7 @@ class Model extends FieldModel{
 			if($value_raw !== null)
 				$value_raw = $value_raw -> getFieldByColumn($this -> getSchema() -> getRelationColumn()) -> getValue();
 		}
-		
+
 		$this -> value_raw = $value_raw;
 
 		if(!$persist){
@@ -138,7 +139,7 @@ class Model extends FieldModel{
 
 		if(!$this -> value_updated){
 
-			$this -> value = $this -> getSchema() -> getRelation()::first($this -> getValueRaw());
+			$this -> value = $this -> getSchema() -> getRelation()::where($this -> getSchema() -> getRelationColumn(),$this -> getValueRaw()) -> first();
 			$this -> value_updated = true;
 
 		}

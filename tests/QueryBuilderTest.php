@@ -12,6 +12,11 @@ class QueryBuilderTest extends TestCase{
 
     public function testQueryBuilder(){
 
+        DB::table('tab3_tab2') -> truncate();
+        DB::table('tab2') -> truncate();
+        DB::table('tab3') -> truncate();
+        DB::table('tab1') -> truncate();
+
         DB::schema('tab1',function($tab){
             $tab -> id();
             $tab -> string('Name') -> unique();

@@ -18,7 +18,7 @@ class Isbn extends Model{
      *
      * @param Schema $schema
      */
-    public static function setSchemaFields($schema){
+    public static function fields($schema){
 
         $schema -> string('code') -> primary();
 

@@ -7,6 +7,8 @@ use CoreWine\DataBase\ORM\SchemaBuilder;
 use CoreWine\DataBase\Test\Model\Book;
 use CoreWine\DataBase\Test\Model\Author;
 use CoreWine\DataBase\Test\Model\Isbn;
+use CoreWine\DataBase\Test\Model\Order;
+
 
 class ORMTest extends TestCase{
    
@@ -26,6 +28,7 @@ class ORMTest extends TestCase{
         SchemaBuilder::setFields([
             'toOne' => CoreWine\DataBase\ORM\Field\Relations\ToOne\Schema::class,
             'toMany' => CoreWine\DataBase\ORM\Field\Relations\ToMany\Schema::class,
+            'throughMany' => CoreWine\DataBase\ORM\Field\Relations\ThroughMany\Schema::class,
             'string' => CoreWine\DataBase\ORM\Field\String\Schema::class,
             'id' => CoreWine\DataBase\ORM\Field\Identifier\Schema::class,
             'timestamp' => CoreWine\DataBase\ORM\Field\Timestamp\Schema::class,
@@ -58,6 +61,7 @@ class ORMTest extends TestCase{
         $book -> isbn = $isbn;
 
         $book -> save();
+        
 
         $book = Book::first();
         
@@ -71,21 +75,39 @@ class ORMTest extends TestCase{
     }
 
     public function testAdvancedRelations(){
-
+        
         $author = Author::first();
-
         $book = new Book;
         $book -> title = "Eragon";
         $book -> isbn = new Isbn();
         $book -> isbn -> code = "978-4-16-148410-0";
         $book -> isbn -> save();
 
-        $author -> books -> add($book);
-        $author -> books -> remove(Book::first());
 
-        # Adding the same entity doesn't work (correct)
+        $book2 = Book::first();
+        $author -> books -> remove($book2);
+        $author -> books -> add($book);
         $author -> books[] = $book;
         $author -> books -> save();
+
+        //print_r(\CoreWine\DataBase\DB::log(true));
+
+        //$author -> books -> sync([$book]);
+
+        return;
+
+        $order = new Order();
+        $order -> transaction = '1234567890';
+        $order -> save();
+
+
+        $order -> books -> add($book);
+
+        $order -> books -> save();
+
+
+        $book -> orders -> remove($order);
+        $book -> orders -> save();
 
         
     }

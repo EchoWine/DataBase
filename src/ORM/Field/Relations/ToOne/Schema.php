@@ -76,6 +76,29 @@ class Schema extends FieldSchema{
 	public static function factory($relation = null,$name = null,$column = null,$relation_column = null){
 		return new static($relation,$name,$column,$relation_column);
 	}
+	
+	/**
+	 * Resolve relations
+	 *
+	 * @param array $result
+	 * @param Repository $repository
+	 *
+	 * @return array
+	 */
+	public function resolveRelations(&$results,&$relation,$repository){
+
+
+		foreach($results as $result){
+			if(!empty($result[$this -> getColumn()])){
+				if(!$repository -> isObjectORM($this -> getRelation(),$result[$this -> getColumn()])){
+					
+					$relation[$this -> getRelation()][$this -> getRelationColumn()][$result[$this -> getColumn()]] = $result[$this -> getColumn()];
+				}
+			}
+		}
+
+
+	}
 }
 
 ?>

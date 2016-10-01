@@ -42,4 +42,9 @@ class Collection extends BaseCollection{
     public function save(){
         $this -> getModel() -> save();
     }
+
+    public function sync($values){
+        $this -> getModel() -> setValue($values);
+        $this -> save();
+    }
 }

@@ -252,6 +252,11 @@ class Schema{
 	 */
 	public function primary($primary = true){
 		$this -> primary = $primary;
+
+		if($primary)
+			$this -> unique(true);
+		
+		return $this;
 	}
 
 	/**
@@ -523,6 +528,7 @@ class Schema{
 			return static::VALIDATION_ERROR_INVALID_VALUE;
 
 
+		
 		if($this -> getUnique()){
 
 			$repository = $model::repository();
@@ -594,6 +600,18 @@ class Schema{
 			$table = $this -> getObjectSchema() -> getTable();
 
 		return $repository -> orWhereLike($table.".".$this -> getColumn(),'%'.$value.'%');
+	}
+	
+	/**
+	 * Resolve relations
+	 *
+	 * @param array $result
+	 * @param Repository $repository
+	 *
+	 * @return array
+	 */
+	public function resolveRelations(&$results,&$relation,$repository){
+		return [];
 	}
 }
 ?>

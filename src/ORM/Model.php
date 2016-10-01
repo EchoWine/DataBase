@@ -158,7 +158,7 @@ class Model{
 	 *
 	 * @param Schema $schema
 	 */
-	public static function setSchemaFields($schema){}
+	public static function fields($schema){}
 
 	/**
 	 * Seed
@@ -200,7 +200,7 @@ class Model{
 		$schema -> setTable(static::$table);
 
 		static::$schema = $schema;
-		static::setSchemaFields(new SchemaBuilder($schema));
+		static::fields(new SchemaBuilder($schema));
 		static::repository() -> alterSchema();
 		static::setSeed();
 
@@ -611,6 +611,7 @@ class Model{
 		$values = [];
 
 		foreach($fields as $name => $field){
+			print_r($name);
 			if($field -> getSchema() -> updateIfValueEmpty($field -> getValue())){
 				$values[$name] = $field -> getValue();
 			}
@@ -648,9 +649,8 @@ class Model{
 			$values = $this -> getValuesInsert($fields);
 		}else{
 			$values = $this -> getValuesUpdate($fields);
-
 		}
-		$validation = static::validateAll($values,$this);
+		$validation = static::validate($values,$this);
 		static::setLastValidate($validation);
 
 		if(!empty($validation))
@@ -660,15 +660,16 @@ class Model{
 
 			$ai = $this -> insert($fields);
 
+
 			if(($field = $this -> getAutoIncrementField()) !== null)
 				$field -> setValueRawFromRepository([$field -> getSchema() -> getColumn() => $ai[0]]);
 
 		}else{
+
 			$this -> update($fields);
 		}
 
 		$this -> setPersist(0);
-
 
 
 		return $this;
@@ -776,7 +777,15 @@ class Model{
 	 * Return if current model is equal 
 	 */
 	public function isEqual($model){
-		return $this -> getPrimaryField() -> getValue() == $model -> getPrimaryField() -> getValue();
+
+		foreach($this -> getFields() as $name => $field){
+			if($model -> getField($name) && $model -> getField($name) -> getValue() == $field -> getValue()){
+
+			}else{
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

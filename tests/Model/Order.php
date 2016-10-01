@@ -4,14 +4,14 @@ namespace CoreWine\DataBase\Test\Model;
 
 use CoreWine\DataBase\ORM\Model;
 
-class Book extends Model{
+class Order extends Model{
 
     /**
      * Table name
      *
      * @var
      */
-    public static $table = 'books';
+    public static $table = 'orders';
 
     /**
      * Set schema fields
@@ -20,16 +20,15 @@ class Book extends Model{
      */
     public static function fields($schema){
 
-    
         $schema -> id();
-        
-        $schema -> string('title')
-                -> maxLength(128)
-                -> minLength(3)
+
+        $schema -> string('transaction')
                 -> required();
 
-        $schema -> toOne(Author::class,'author');
-        $schema -> toOne(Isbn::class,'isbn','isbn_code','code') -> required();
+        $schema -> throughMany('books',Book::class)
+                -> addRelation('full','orders_books','order_id','book_id');
+                // -> addModel(OrderBook::class)
+        );
     }
 }
 
