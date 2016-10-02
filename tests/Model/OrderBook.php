@@ -4,14 +4,14 @@ namespace CoreWine\DataBase\Test\Model;
 
 use CoreWine\DataBase\ORM\Model;
 
-class Order extends Model{
+class OrderBook extends Model{
 
     /**
      * Table name
      *
      * @var
      */
-    public static $table = 'orders';
+    public static $table = 'orders_books';
 
     /**
      * Set schema fields
@@ -21,14 +21,10 @@ class Order extends Model{
     public static function fields($schema){
 
         $schema -> id();
+        
+        $schema -> toOne(Order::class,'order') -> required();
 
-        $schema -> string('transaction')
-                -> required();
-
-        $schema -> toMany(OrderBook::class,'ordersbooks','order_id')
-                -> to('books','book');
-
-
+        $schema -> toOne(Book::class,'book') -> required();
 
         
     }

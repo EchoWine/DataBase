@@ -8,6 +8,7 @@ use CoreWine\DataBase\Test\Model\Book;
 use CoreWine\DataBase\Test\Model\Author;
 use CoreWine\DataBase\Test\Model\Isbn;
 use CoreWine\DataBase\Test\Model\Order;
+use CoreWine\DataBase\Test\Model\OrderBook;
 
 
 class ORMTest extends TestCase{
@@ -39,6 +40,8 @@ class ORMTest extends TestCase{
         Author::truncate();
         Book::truncate();
         Isbn::truncate();
+        Order::truncate();
+        OrderBook::truncate();
     }
 
     public function testBasicRelations(){
@@ -90,24 +93,34 @@ class ORMTest extends TestCase{
         $author -> books[] = $book;
         $author -> books -> save();
 
-        //print_r(\CoreWine\DataBase\DB::log(true));
 
         //$author -> books -> sync([$book]);
 
-        return;
 
         $order = new Order();
         $order -> transaction = '1234567890';
         $order -> save();
 
 
-        $order -> books -> add($book);
+        $ob = new OrderBook();
+        $ob -> book = $book;
+        $ob -> order = $order;
+        $ob -> save();
 
+        $order = Order::where('id',1) -> first();
+
+
+        $order -> books -> add($book2);
+        $order -> books -> remove($book);
         $order -> books -> save();
 
+        $book = Book::first();
 
-        $book -> orders -> remove($order);
+        $book -> orders -> add($order);
         $book -> orders -> save();
+
+        print_r(\CoreWine\DataBase\DB::log(true));
+
 
         
     }

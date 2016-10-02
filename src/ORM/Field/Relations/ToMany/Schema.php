@@ -27,6 +27,9 @@ class Schema extends FieldSchema{
 	 */
 	public $enable_to_array = false;
 
+	protected $collection;
+
+
 	/**
 	 * Set relation
 	 *
@@ -85,6 +88,16 @@ class Schema extends FieldSchema{
 	 */
 	public static function factory($relation = null,$name = null,$reference = null){
 		return new static($relation,$name,$reference);
+	}
+
+	public function to($name,$relation_name){
+		$this -> name = $name;
+		$this -> label = $name;
+		$this -> collection = $relation_name;
+	}
+
+	public function getCollection(){
+		return $this -> collection;
 	}
 
 	/**

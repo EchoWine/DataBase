@@ -611,7 +611,6 @@ class Model{
 		$values = [];
 
 		foreach($fields as $name => $field){
-			print_r($name);
 			if($field -> getSchema() -> updateIfValueEmpty($field -> getValue())){
 				$values[$name] = $field -> getValue();
 			}
@@ -779,7 +778,7 @@ class Model{
 	public function isEqual($model){
 
 		foreach($this -> getFields() as $name => $field){
-			if($model -> getField($name) && $model -> getField($name) -> getValue() == $field -> getValue()){
+			if($model -> getField($name) && $model -> getField($name) -> getValueRaw() == $field -> getValueRaw()){
 
 			}else{
 				return false;

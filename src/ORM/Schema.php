@@ -96,6 +96,24 @@ class Schema{
 		return $this -> fields;
 	}
 
+	
+
+	/**
+	 * Get a field by column
+	 *
+	 * @param string $name
+	 *
+	 * @return Field
+	 */
+	public function getFieldByColumn($column){
+		foreach($this -> getFields() as $field){
+			if($field -> getColumn() == $column)
+				return $field;
+		}
+
+		return null;
+	}
+
 	/**
 	 * Get all fields and all alias
 	 *

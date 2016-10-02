@@ -19,6 +19,11 @@ class Model extends FieldModel{
 	/** 
 	 * List of all Model to delete()
 	 */
+	public $value_to_remove = [];
+
+	/** 
+	 * List of all Model to delete()
+	 */
 	public $value_to_delete = [];
 
 	/**
@@ -97,6 +102,25 @@ class Model extends FieldModel{
 		return $this -> value_to_delete;
 	}
 
+
+	/**
+	 * Add to model to delete
+	 *
+	 * @param ORM\Model $model
+	 */
+	public function addValueToRemove($model){
+		$this -> value_to_remove[$model -> getPrimaryField() -> getValue()] = $model;
+	}
+
+	/**
+	 * Get list of all model to delete
+	 *
+	 * @return array ORM\Model
+	 */
+	public function getValueToRemove(){
+		return $this -> value_to_remove;
+	}
+
 	/**
 	 * Remove a model to collection if exist
 	 *
@@ -106,19 +130,36 @@ class Model extends FieldModel{
 		foreach($this -> getValue() as $n => $_model){
 			if($model -> isEqual($_model)){
 				$_model -> getFieldByColumn($this -> getSchema() -> getReference()) -> setValue(null);
+				$this -> addValueToRemove($model);
+				$this -> removeValue($n);
+			}
+		}
+	}
+
+	/**
+	 * Remove a model to collection if exist
+	 *
+	 * @param ORM\Model $model
+	 */
+	public function delete($model){
+		foreach($this -> getValue() as $n => $_model){
+			if($model -> isEqual($_model)){
 				$this -> addValueToDelete($model);
 				$this -> removeValue($n);
 			}
 		}
-
 	}
 
 	/**
 	 * Save all model in collection
 	 */
 	public function save(){
-		foreach($this -> getValueToDelete() as $value){
+		foreach($this -> getValueToRemove() as $value){
 			$value -> save();
+		}
+
+		foreach($this -> getValueToDelete() as $value){
+			$value -> delete();
 		}
 
 		foreach($this -> getValueToSave() as $value){
@@ -225,7 +266,10 @@ class Model extends FieldModel{
 	 * @return mixed
 	 */
 	public function parseRawToValue($value){
+
+
 		$c = new Collection($value);
+
 		$c -> setModel($this);
 		return $c;
 	}

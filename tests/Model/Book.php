@@ -29,7 +29,12 @@ class Book extends Model{
                 -> required();
 
         $schema -> toOne(Author::class,'author');
+
         $schema -> toOne(Isbn::class,'isbn','isbn_code','code') -> required();
+
+        $schema -> toMany(OrderBook::class,'booksorders','book_id')
+                -> to('orders','order');
+
     }
 }
 
