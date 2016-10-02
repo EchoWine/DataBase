@@ -220,6 +220,10 @@ class Repository extends QueryBuilder{
 	public function alterSchema(){
 
 		$fields = $this -> getSchema() -> getFields();
+
+		if(empty($fields))
+			return;
+		
 		DB::schema($this -> getSchema() -> getTable(),function($table) use ($fields){
 			foreach($fields as $name => $field){
 				$field -> alter($table);

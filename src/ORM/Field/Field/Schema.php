@@ -156,7 +156,7 @@ class Schema{
 	/**
 	 * Regex of field
 	 */
-	public $regex = "/^(.){0,255}$/iU";
+	public $regex = "/^(.*)$/iU";
 
 	const VALIDATION_ERROR_REQUIRED = "error_required";
 	const VALIDATION_ERROR_EMPTY = "error_empty";

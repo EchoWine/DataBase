@@ -28,8 +28,6 @@ class Order extends Model{
         $schema -> toMany(OrderBook::class,'ordersbooks','order_id')
                 -> to('books','book');
 
-
-
         
     }
 }

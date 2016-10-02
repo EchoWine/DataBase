@@ -208,6 +208,9 @@ class Model{
 			$field -> setObjectSchema(static::schema());
 		}
 
+		if(!$schema -> getPrimaryField())
+			throw new \Exception("Missing primary field in ".get_called_class());
+
 		return $schema;
 	}
 

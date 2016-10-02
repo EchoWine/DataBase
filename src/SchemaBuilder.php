@@ -164,6 +164,26 @@ class SchemaBuilder{
 	}
 
 	/**
+	 * Defines the column date
+	 *
+	 * @param string $name
+	 * @return object $this
+	 */
+	public function date($name){
+		return $this -> column($name,DB::SQL()::DATE);
+	}
+
+	/**
+	 * Defines the column datetime
+	 *
+	 * @param string $name
+	 * @return object $this
+	 */
+	public function datetime($name){
+		return $this -> column($name,DB::SQL()::DATETIME);
+	}
+
+	/**
 	 * Defines the column md5
 	 *
 	 * @param string $name

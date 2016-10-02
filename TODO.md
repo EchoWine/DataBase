@@ -1,6 +1,9 @@
 - More tests
 - More fields
-- ManyToMany ?
+- Improve ManyToMany (Without model)
+- toOne reversed
 - Delete column not defined in schema ? (config)
 - Cascade operation
+- Automatic created_at/updated_at in ORM
+- Basic fields automatically loaded without config?
 - Improve array rapresentation (with/without relations)

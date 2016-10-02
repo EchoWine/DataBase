@@ -77,7 +77,7 @@ class Model extends FieldModel{
 
 		if($this -> getLastAliasCalled() == $this -> getSchema() -> getName()){
 
-			if($value_raw !== null)
+			if($value_raw)
 				$value_raw = $value_raw -> getFieldByColumn($this -> getSchema() -> getRelationColumn()) -> getValue();
 		}
 

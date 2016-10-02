@@ -11,6 +11,8 @@ class SQL{
 	const BIGINT = 'bigint';
 	const INT = 'int';
 	const VARCHAR = 'varchar';
+	const DATE = 'date';
+	const DATETIME = 'datetime';
 	const FLOAT = 'float';
 	const DOUBLE = 'double';
 	const TEXT = 'text';
@@ -160,11 +162,13 @@ class SQL{
 
 
 			case self::TEXT:
+			case self::DATE:
+			case self::DATETIME:
 				return $type;
 
 		}
 
-		die('Error');
+		throw new \Exception("SQL: Type not found");
 	}
 
 	public static function ENABLE_CHECKS_FOREIGN(){
