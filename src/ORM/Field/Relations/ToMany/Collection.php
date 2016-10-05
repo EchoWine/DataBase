@@ -69,6 +69,10 @@ class Collection extends BaseCollection{
         $this -> getModel() -> remove($value);
     }
 
+    public function has($value){
+        return parent::has($value);
+    }
+
     public function save(){
         $this -> getModel() -> save();
     }
