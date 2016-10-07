@@ -70,6 +70,28 @@ class Collection extends BaseCollection{
     }
 
     public function has($value){
+
+        $schema = $this -> getModel() -> getSchema();
+
+        if($collection = $schema -> getCollection()){
+
+            $relation = $schema -> getRelation();
+            $ob = new $relation();
+            $ob -> {$collection} = $value;
+            $field = $relation::schema() -> getFieldByColumn($schema -> getReference());
+            $ob -> {$field -> getName()} = $this -> getModel() -> getModel();
+            $value = $ob; 
+            
+            foreach($this -> container as $k){
+                if($k -> {$collection} == $value -> {$collection} && $k -> {$field -> getName()} == $value -> {$field -> getName()}){
+                    return true;
+                }
+            }
+
+            return true;
+        }   
+
+
         return parent::has($value);
     }
 
