@@ -50,22 +50,6 @@ class Collection extends BaseCollection{
 
     public function remove($value){
 
-
-        $schema = $this -> getModel() -> getSchema();
-
-        if($collection = $schema -> getCollection()){
-
-            $relation = $schema -> getRelation();
-            $ob = new $relation();
-            $ob -> {$collection} = $value;
-
-            $field = $relation::schema() -> getFieldByColumn($schema -> getReference());
-            $ob -> {$field -> getName()} = $this -> getModel() -> getModel();
-            $value = $ob; 
-            $this -> getModel() -> delete($value);
-            return true;
-        }   
-
         $this -> getModel() -> remove($value);
     }
 
@@ -88,7 +72,7 @@ class Collection extends BaseCollection{
                 }
             }
 
-            return true;
+            return false;
         }   
 
 

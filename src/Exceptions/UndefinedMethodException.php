@@ -1,6 +1,6 @@
 <?php
 
-namespace CoreWine\DataBase\ORM\Exceptions;
+namespace CoreWine\DataBase\Exceptions;
 
 class UndefinedMethodException extends \Exception{
 

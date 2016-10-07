@@ -127,6 +127,11 @@ class Model extends FieldModel{
 	 * @param ORM\Model $model
 	 */
 	public function remove($model){
+
+        if($this -> getSchema() -> getCollection()){
+            return $this -> delete($model);
+        }   
+
 		foreach($this -> getValue() as $n => $_model){
 			if($model -> isEqual($_model)){
 				$_model -> getFieldByColumn($this -> getSchema() -> getReference()) -> setValue(null);
@@ -142,12 +147,23 @@ class Model extends FieldModel{
 	 * @param ORM\Model $model
 	 */
 	public function delete($model){
+
+        $schema = $this -> getSchema();
+		$collection = $schema -> getCollection();
+		$relation = $schema -> getRelation();
+        $ob = new $relation();
+        $ob -> {$collection} = $model;
+        $field = $relation::schema() -> getFieldByColumn($schema -> getReference());
+        $ob -> {$field -> getName()} = $this -> getModel();
+        $model = $ob; 
 		foreach($this -> getValue() as $n => $_model){
-			if($model -> isEqual($_model)){
-				$this -> addValueToDelete($model);
+    		if($_model -> {$collection} == $model -> {$collection} && $_model -> {$field -> getName()} == $model -> {$field -> getName()}){
+    			
+				$this -> addValueToDelete($_model);
 				$this -> removeValue($n);
-			}
-		}
+    		}
+    	}
+    
 	}
 
 	/**
