@@ -156,7 +156,7 @@ class Schema{
 	/**
 	 * Regex of field
 	 */
-	public $regex = "/^(.*)$/iU";
+	public $regex = null;
 
 	const VALIDATION_ERROR_REQUIRED = "error_required";
 	const VALIDATION_ERROR_EMPTY = "error_empty";
@@ -524,7 +524,7 @@ class Schema{
 		if($length > $this -> getMaxLength())
 			return static::VALIDATION_ERROR_TOO_LONG;
 
-		if(!preg_match($this -> regex,$value))
+		if($this -> regex !== null && !preg_match($this -> regex,$value))
 			return static::VALIDATION_ERROR_INVALID_VALUE;
 
 

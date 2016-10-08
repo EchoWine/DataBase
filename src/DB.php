@@ -197,7 +197,7 @@ class DB{
 	 */
 	public static function select(string $db){
 		if(self::getAlterSchema())
-			self::query("CREATE DATABASE IF NOT EXISTS $db");
+			self::query("CREATE DATABASE IF NOT EXISTS $db DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci");
 		
 		
 		self::query("SET GLOBAL connect_timeout=500;");
