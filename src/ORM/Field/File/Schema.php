@@ -27,7 +27,7 @@ class Schema extends FieldSchema{
 	}
 
 	public function getDirBase(){
-		return $this -> dir_base == null ? "img/" : $this -> dir_base;
+		return $this -> dir_base == null ? "uploads/" : $this -> dir_base;
 	}
 
 }
