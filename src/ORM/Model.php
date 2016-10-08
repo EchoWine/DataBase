@@ -52,7 +52,7 @@ class Model{
 	 * @var array
 	 */
 	public static $callable_to_repository = [
-		'all','first','wherePrimary','where','count','first','orderBy','orderByDesc','orderByAsc'
+		'all','first','wherePrimary','whereIn','where','count','first','orderBy','orderByDesc','orderByAsc'
 	];
 
 	/**
@@ -652,7 +652,9 @@ class Model{
 		}else{
 			$values = $this -> getValuesUpdate($fields);
 		}
+
 		$validation = static::validate($values,$this);
+
 		static::setLastValidate($validation);
 
 		if(!empty($validation))
@@ -666,9 +668,15 @@ class Model{
 			if(($field = $this -> getAutoIncrementField()) !== null)
 				$field -> setValueRawFromRepository([$field -> getSchema() -> getColumn() => $ai[0]]);
 
+			$this -> fireEvent('inserted',[$this]);
+			$this -> fireEvent('saved',[$this]);
+
 		}else{
 
 			$this -> update($fields);
+
+			$this -> fireEvent('updated',[$this]);
+			$this -> fireEvent('saved',[$this]);
 		}
 
 		$this -> setPersist(0);
@@ -707,6 +715,8 @@ class Model{
 		}
 
 		return $repository -> update();
+
+
 	}
 
 	/**
@@ -725,8 +735,6 @@ class Model{
 		}
 
 		return $repository -> insert();
-
-		
 	}
 
 	/**
@@ -790,6 +798,32 @@ class Model{
 		return true;
 	}
 
+	public static function events(){
+		return [];
+	}
+
+	public function fireEvent($name,$params){
+
+		foreach(static::events() as $n => $callback){
+			$events = explode(";",$n);
+			
+			foreach($events as $event){
+				call_user_func_array($callback,$params);
+			}
+		}
+
+		foreach($this -> getFields() as $field){
+
+			foreach($field -> events() as $n => $callback){
+				$events = explode(";",$n);
+				
+				foreach($events as $event){
+					call_user_func_array($callback,$params);
+				}
+			}
+		}
+
+	}
 }
 
 ?>

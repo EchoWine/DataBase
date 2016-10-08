@@ -11,7 +11,7 @@ class CollectionResults extends Collection{
 	 *
 	 * @var ORM\Repository
 	 */
-	public $repository;
+	protected $repository;
 
     /**
      * Convert collection into array

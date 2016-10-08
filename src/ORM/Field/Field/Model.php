@@ -406,7 +406,14 @@ class Model{
 	 */
 	public function checkPersist(){}
 
-
+	/**
+	 * Define events callback
+	 *
+	 * @return array
+	 */
+	public function events(){
+		return [];
+	}
 
 }
 ?>

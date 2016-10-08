@@ -79,6 +79,24 @@ class Collection extends BaseCollection{
         return parent::has($value);
     }
 
+    public function all(){
+
+        $schema = $this -> getModel() -> getSchema();
+
+        if($collection = $schema -> getCollection()){
+            $return = [];
+
+            foreach($this -> container as $k){
+                $return[] = $k -> {$collection};
+            }
+
+            return $return;
+        }   
+
+
+        return $this -> container;
+    }
+
     public function save(){
         $this -> getModel() -> save();
     }
