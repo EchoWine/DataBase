@@ -479,6 +479,23 @@ class Model{
 	}
 
 	/**
+	 * Return a new model and save
+	 *
+	 * @param array $values
+	 *
+	 * @return Model
+	 */
+	public static function firstOrCreate($values = []){
+		
+		$model = static::repository() -> where($values) -> first();
+
+		if($model)
+			return $model;
+
+		return self::create($values);
+	}
+
+	/**
 	 * Return a new model copied
 	 *
 	 * @param array $values
