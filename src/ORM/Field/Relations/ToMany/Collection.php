@@ -66,7 +66,7 @@ class Collection extends BaseCollection{
             $ob -> {$field -> getName()} = $this -> getModel() -> getModel();
             $value = $ob; 
             
-            foreach($this -> container as $k){
+            foreach($this as $k){
                 if($k -> {$collection} == $value -> {$collection} && $k -> {$field -> getName()} == $value -> {$field -> getName()}){
                     return true;
                 }
@@ -85,8 +85,7 @@ class Collection extends BaseCollection{
 
         if($collection = $schema -> getCollection()){
             $return = [];
-
-            foreach($this -> container as $k){
+            foreach($this as $k){
                 $return[] = $k -> {$collection};
             }
 
@@ -94,7 +93,7 @@ class Collection extends BaseCollection{
         }   
 
 
-        return $this -> container;
+        return $this;
     }
 
     public function save(){

@@ -20,7 +20,7 @@ class CollectionResults extends Collection{
      */
     public function toArray(){
         $return = [];
-        foreach($this -> container as $item){
+        foreach($this as $item){
             if($item instanceof Model){
                 $return[] = $item -> toArray();
             }else{
