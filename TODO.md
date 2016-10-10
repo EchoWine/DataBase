@@ -14,3 +14,4 @@
 - Field File
 - Events Field
 - Events Model
+- Use a specific Collection (extends CollectionResult) defined in Model

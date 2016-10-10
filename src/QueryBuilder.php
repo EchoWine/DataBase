@@ -1337,10 +1337,11 @@ class QueryBuilder{
 	 * @return array result of the query
 	 */
 	public function first(){
-		$r = $this -> take(1) -> get();
 		
-
-		return !empty($r) ? $r[0] : false;
+		$r = $this -> take(1) -> get();
+			
+		return !empty($r) && isset($r[0]) ? $r[0] : false;
+		
 	}
 
 	/**

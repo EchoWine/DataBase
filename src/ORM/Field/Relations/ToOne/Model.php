@@ -96,10 +96,17 @@ class Model extends FieldModel{
 	 * @return mixed
 	 */
 	public function getValueRaw(){
+		
+		if(is_object($this -> value_raw)){
+			die("CoreWine\DataBase\ORM\Field\Relations\ToOne\Model: This is bad");
+		}
+
 		return $this -> value_raw;
 	}
 
-
+	public function setValueRaw($value){
+		$this -> value_raw = $value;
+	}
 	/**
 	 * Set the value
 	 *
@@ -107,7 +114,9 @@ class Model extends FieldModel{
 	 * @param bool $persist
 	 */
 	public function setValue($value = null,$persist = true){
-		if($this -> getLastAliasCalled() == $this -> getSchema() -> getColumn()){
+
+		# Improve check correct instance of
+		if(!is_object($value) && $this -> getLastAliasCalled() == $this -> getSchema() -> getColumn()){
 			$this -> setValueRawToRepository($value,true);
 			$this -> value = null;
 			$this -> value_updated = false;
@@ -189,6 +198,7 @@ class Model extends FieldModel{
 		if($current != $this -> last_value_relation){
 
 			# Re-Set value
+			$this -> last_alias_called = $this -> getSchema() -> getName();
 			$this -> setValue($this -> getValue());
 			$this -> persist = true;
 		}

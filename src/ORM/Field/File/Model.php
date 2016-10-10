@@ -55,6 +55,9 @@ class Model extends FieldModel{
 		return [
 			'saved' => function($model){
 
+				if(!$this -> content)
+					return;
+				
 				$table = $model -> getSchema() -> getTable();
 				$destination = $this -> getFilePath();
 
