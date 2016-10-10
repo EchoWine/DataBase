@@ -52,7 +52,7 @@ class Model{
 	 * @var array
 	 */
 	public static $callable_to_repository = [
-		'all','first','wherePrimary','whereIn','where','count','first','orderBy','orderByDesc','orderByAsc'
+		'leftJoin','rightJoin','join','select','all','first','wherePrimary','whereIn','where','count','first','orderBy','orderByDesc','orderByAsc'
 	];
 
 	/**
