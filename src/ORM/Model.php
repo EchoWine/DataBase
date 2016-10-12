@@ -161,9 +161,9 @@ class Model{
 	public static function fields($schema){}
 
 	/**
-	 * Seed
+	 * Boot
 	 */
-	public static function setSeed(){}
+	public static function boot(){}
 
 	/**
 	 * Set persist
@@ -202,7 +202,7 @@ class Model{
 		static::$schema = $schema;
 		static::fields(new SchemaBuilder($schema));
 		static::repository() -> alterSchema();
-		static::setSeed();
+		static::boot();
 
 		foreach(static::schema() -> getFields() as $field){
 			$field -> setObjectSchema(static::schema());
