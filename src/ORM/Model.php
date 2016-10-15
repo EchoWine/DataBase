@@ -662,6 +662,15 @@ class Model{
 	 */
 	public function save(){
 
+
+		if($this -> getPersist()){
+			$this -> fireEvent('create',[$this]);
+			$this -> fireEvent('save',[$this]);
+		}else{
+			$this -> fireEvent('update',[$this]);
+			$this -> fireEvent('save',[$this]);
+		}
+
 		$fields = $this -> getFieldsToPersist();
 
 		if($this -> getPersist()){
@@ -677,6 +686,7 @@ class Model{
 		if(!empty($validation))
 			return false;
 
+
 		if($this -> getPersist()){
 
 			$ai = $this -> insert($fields);
@@ -685,7 +695,7 @@ class Model{
 			if(($field = $this -> getAutoIncrementField()) !== null)
 				$field -> setValueRawFromRepository([$field -> getSchema() -> getColumn() => $ai[0]]);
 
-			$this -> fireEvent('inserted',[$this]);
+			$this -> fireEvent('created',[$this]);
 			$this -> fireEvent('saved',[$this]);
 
 		}else{
