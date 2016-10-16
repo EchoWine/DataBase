@@ -313,11 +313,14 @@ class Model extends FieldModel{
 			# The primary field of this model
 			$model_primary = $this -> getModel() -> getPrimaryField();
 
-			$v = $this -> getSchema() -> getRelation()::where($reference,$model_primary -> getValue()) -> get();
-			$v = new Collection($v);
-			$v -> setModel($this);
-			$this -> value = $v;
-			$this -> value_updated = true;
+			if($model_primary -> getValue()){
+				
+				$v = $this -> getSchema() -> getRelation()::where($reference,$model_primary -> getValue()) -> get();
+				$v = new Collection($v);
+				$v -> setModel($this);
+				$this -> value = $v;
+				$this -> value_updated = true;
+			}
 
 		}
 
