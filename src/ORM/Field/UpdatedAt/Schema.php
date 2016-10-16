@@ -2,7 +2,7 @@
 
 namespace CoreWine\DataBase\ORM\Field\UpdatedAt;
 
-use CoreWine\DataBase\ORM\Field\DateTime\Schema as FieldSchema;
+use CoreWine\DataBase\ORM\Field\Datetime\Schema as FieldSchema;
 
 class Schema extends FieldSchema{
 	

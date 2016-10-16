@@ -1,6 +1,6 @@
 <?php
 
-namespace CoreWine\DataBase\ORM\Field\Datetime;
+namespace CoreWine\DataBase\ORM\Field\DateTime;
 
 use CoreWine\DataBase\ORM\Field\Field\Model as FieldModel;
 
