@@ -18,7 +18,7 @@ class Model extends FieldModel{
 	 *
 	 * @var bool
 	 */
-	public $value_updated = true;
+	public $value_updated = false;
 
 	/**
 	 * Initialze the alis
@@ -56,12 +56,14 @@ class Model extends FieldModel{
 			foreach($relations[$relation] as $rel){
 				if($rel -> getFieldByColumn($relation_column) -> getValue() == $this -> value_raw){
 					$value = $rel;
+					$this -> value_updated = true;
 					break;
 				}
 			}
 		}
 
 		if(!$persist){
+
 			$this -> setValue($this -> parseRawToValue($value),false);
 			$this -> persist = $persist;
 		}
@@ -143,9 +145,11 @@ class Model extends FieldModel{
 	 */
 	public function getValue(){
 
+
 		if($this -> getLastAliasCalled() == $this -> getSchema() -> getColumn())
 			return $this -> getValueRaw();
 
+		
 		if(!$this -> value_updated){
 
 			$this -> value = $this -> getSchema() -> getRelation()::where($this -> getSchema() -> getRelationColumn(),$this -> getValueRaw()) -> first();

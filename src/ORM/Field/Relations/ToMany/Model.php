@@ -33,6 +33,12 @@ class Model extends FieldModel{
 	 */
 	protected $last_value_relation = [];
 
+	/**
+	 * Is the value updated
+	 *
+	 * @var bool
+	 */
+	public $value_updated = false;
 
 
 	/**
@@ -158,7 +164,7 @@ class Model extends FieldModel{
         $model = $ob; 
 		foreach($this -> getValue() as $n => $_model){
     		if($_model -> {$collection} == $model -> {$collection} && $_model -> {$field -> getName()} == $model -> {$field -> getName()}){
-    			
+    				
 				$this -> addValueToDelete($_model);
 				$this -> removeValue($n);
     		}
@@ -218,6 +224,8 @@ class Model extends FieldModel{
 						if($this -> isThisRelation($field,$result)){
 							$value[$result -> getPrimaryField() -> getValue()] = $result;
 						}
+
+						$this -> value_updated = true;
 					}
 				}
 			}
@@ -288,6 +296,33 @@ class Model extends FieldModel{
 
 		$c -> setModel($this);
 		return $c;
+	}
+
+	/**
+	 * Get the value
+	 *
+	 * @return mixed
+	 */
+	public function getValue(){
+		
+		if(!$this -> value_updated){
+
+			# The name of column of relation
+			$reference = $this -> getSchema() -> getReference();
+			
+			# The primary field of this model
+			$model_primary = $this -> getModel() -> getPrimaryField();
+
+			$v = $this -> getSchema() -> getRelation()::where($reference,$model_primary -> getValue()) -> get();
+			$v = new Collection($v);
+			$v -> setModel($this);
+			$this -> value = $v;
+			$this -> value_updated = true;
+
+		}
+
+
+		return $this -> value;
 	}
 
 	/**

@@ -73,7 +73,7 @@ class Repository extends QueryBuilder{
 				$return[] = $model;
 			}
 
-
+			/*
 			# Retrieve relations for this results
 			$__relations = $rep -> retrieveRelations($results,$rep -> getSchema());
 
@@ -88,6 +88,7 @@ class Repository extends QueryBuilder{
 				}
 
 			}
+			*/
 
 			# Fill all fields of ORM Object
 			foreach($return as $n => $model){
