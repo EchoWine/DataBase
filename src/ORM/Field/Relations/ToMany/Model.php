@@ -223,9 +223,9 @@ class Model extends FieldModel{
 						# Of all results take only with a relation, with a column reference, with a value of primary == reference
 						if($this -> isThisRelation($field,$result)){
 							$value[$result -> getPrimaryField() -> getValue()] = $result;
+							$this -> value_updated = true;
 						}
 
-						$this -> value_updated = true;
 					}
 				}
 			}
@@ -306,7 +306,6 @@ class Model extends FieldModel{
 	public function getValue(){
 		
 		if(!$this -> value_updated){
-
 			# The name of column of relation
 			$reference = $this -> getSchema() -> getReference();
 			
@@ -314,6 +313,8 @@ class Model extends FieldModel{
 			$model_primary = $this -> getModel() -> getPrimaryField();
 
 			if($model_primary -> getValue()){
+
+
 				
 				$v = $this -> getSchema() -> getRelation()::where($reference,$model_primary -> getValue()) -> get();
 				$v = new Collection($v);
