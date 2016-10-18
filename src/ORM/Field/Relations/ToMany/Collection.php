@@ -67,7 +67,7 @@ class Collection extends BaseCollection{
             $value = $ob; 
             
             foreach($this as $k){
-                if($k -> {$collection} == $value -> {$collection} && $k -> {$field -> getName()} == $value -> {$field -> getName()}){
+                if($k -> {$collection} -> id == $value -> {$collection} -> id && $k -> {$field -> getName()} == $value -> {$field -> getName()}){
                     return true;
                 }
             }
