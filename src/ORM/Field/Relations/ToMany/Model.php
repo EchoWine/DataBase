@@ -139,7 +139,7 @@ class Model extends FieldModel{
         }   
 
 		foreach($this -> getValue() as $n => $_model){
-			if($model -> isEqual($_model)){
+			if($model -> equalTo($_model)){
 				$_model -> getFieldByColumn($this -> getSchema() -> getReference()) -> setValue(null);
 				$this -> addValueToRemove($model);
 				$this -> removeValue($n);
@@ -163,7 +163,9 @@ class Model extends FieldModel{
         $ob -> {$field -> getName()} = $this -> getModel();
         $model = $ob; 
 		foreach($this -> getValue() as $n => $_model){
-    		if($_model -> {$collection} == $model -> {$collection} && $_model -> {$field -> getName()} == $model -> {$field -> getName()}){
+
+
+    		if($_model -> {$collection} -> equalTo($model -> {$collection}) && $_model -> {$field -> getName()} == $model -> {$field -> getName()}){
     				
 				$this -> addValueToDelete($_model);
 				$this -> removeValue($n);

@@ -45,6 +45,22 @@ class Model{
 	public $persist = true;
 
 	/**
+	 * Object ID when persist = true
+	 *
+	 * This will help to compare new objects
+	 *
+	 * @var int
+	 */
+	public $persist_id = 0;
+
+	/**
+	 * Last persist ID
+	 *
+	 * @var int
+	 */
+	public static $count_persist_id = 0;
+
+	/**
 	 * Callable to repository
 	 *
 	 * List of all callable to repository
@@ -525,6 +541,7 @@ class Model{
 	public static function new($values = []){
 
 		$model = new static();
+		$model -> newPersistID();
 		$model -> fill($values);
 
 		return $model;
@@ -811,18 +828,45 @@ class Model{
 	}
 
 	/**
-	 * Return if current model is equal 
+	 * Return if current model is equal to another
+	 *
+	 * @param Model $model
+	 *
+	 * @return bool
 	 */
-	public function isEqual($model){
+	public function equalTo($model){
 
-		foreach($this -> getFields() as $name => $field){
-			if($model -> getField($name) && $model -> getField($name) -> getValueRaw() == $field -> getValueRaw()){
+		if(get_class($this) != get_class($model))
+			return false;
 
-			}else{
-				return false;
-			}
+		if($this -> persist && $model -> persist){
+
+			return $this -> getPersistID() == $model -> getPersistID();
 		}
-		return true;
+
+		if(!$this -> persist && !$model -> persist){
+
+			return $this -> getPrimaryField() -> getValue() == $model -> getPrimaryField() -> getValue();
+		}
+
+		return false;
+
+	}
+
+	/**
+	 * Return current persist ID
+	 *
+	 * @return int
+	 */
+	public function getPersistID(){
+		return $this -> persist_id;
+	}
+
+	/**
+	 * Add new persist ID using last used
+	 */
+	public function newPersistID(){
+		$this -> persist_id = self::$count_persist_id++;
 	}
 
 	public static function events(){
