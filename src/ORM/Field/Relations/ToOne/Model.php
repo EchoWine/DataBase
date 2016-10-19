@@ -56,13 +56,12 @@ class Model extends FieldModel{
 			foreach($relations[$relation] as $rel){
 				if($rel -> getFieldByColumn($relation_column) -> getValue() == $this -> value_raw){
 					$value = $rel;
-					$this -> value_updated = true;
 					break;
 				}
 			}
 		}
 
-		if(!$persist){
+		if(!$persist && $value){
 
 			$this -> setValue($this -> parseRawToValue($value),false);
 			$this -> persist = $persist;
@@ -76,8 +75,10 @@ class Model extends FieldModel{
 	 */
 	public function setValueRawToRepository($value_raw,$persist = false){
 
+		if(is_object($value_raw)){
 
-		if($this -> getLastAliasCalled() == $this -> getSchema() -> getName()){
+			if(get_class($value_raw) !== $this -> getSchema() -> getRelation())
+				throw new \Exception("Incorrect object assigned to field");
 
 			if($value_raw)
 				$value_raw = $value_raw -> getFieldByColumn($this -> getSchema() -> getRelationColumn()) -> getValue();
@@ -116,14 +117,22 @@ class Model extends FieldModel{
 	 * @param bool $persist
 	 */
 	public function setValue($value = null,$persist = true){
+		
+		if($value)
+			$this -> value_updated = true;
 
 		# Improve check correct instance of
-		if(!is_object($value) && $this -> getLastAliasCalled() == $this -> getSchema() -> getColumn()){
+		if(!is_object($value)){
 			$this -> setValueRawToRepository($value,true);
 			$this -> value = null;
-			$this -> value_updated = false;
 			$this -> persist = $persist;
 			return;
+		}
+		
+		if(get_class($value) !== $this -> getSchema() -> getRelation()){
+			throw new \Exception(basename($this -> getObjectModel() -> getClass()).
+				" Incorrect object assigned to field: ". 
+				basename($this -> getSchema() -> getRelation())." != ".basename(get_class($value)));
 		}
 
 		$this -> value = $value;
@@ -150,7 +159,7 @@ class Model extends FieldModel{
 			return $this -> getValueRaw();
 
 		
-		if(!$this -> value_updated){
+		if(!$this -> value_updated && $this -> getValueRaw()){
 
 			$this -> value = $this -> getSchema() -> getRelation()::where($this -> getSchema() -> getRelationColumn(),$this -> getValueRaw()) -> first();
 			$this -> value_updated = true;
@@ -197,6 +206,7 @@ class Model extends FieldModel{
 
 		$field = $this -> getSchema() -> getRelationColumn();
 		$current = $this -> getValue() -> $field;
+
 
 		# The primary key may be changed
 		if($current != $this -> last_value_relation){

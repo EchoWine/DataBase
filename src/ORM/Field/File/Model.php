@@ -77,11 +77,11 @@ class Model extends FieldModel{
 	}
 
 	public function getFilePath(){
-		return $this -> getDirBase().$this -> getDirObject().$this -> getDirModel($this -> getModel()).$this -> getValue();
+		return $this -> getDirBase().$this -> getDirObject().$this -> getDirModel($this -> getObjectModel()).$this -> getValue();
 	}
 
 	public function getFullPath(){
-		return $this -> getDirBase().$this -> getDirObject().$this -> getDirModel($this -> getModel()).$this -> getValue();
+		return $this -> getDirBase().$this -> getDirObject().$this -> getDirModel($this -> getObjectModel()).$this -> getValue();
 	}
 }
 

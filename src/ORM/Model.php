@@ -82,7 +82,7 @@ class Model{
 	public function iniFields(){
 		foreach(static::schema() -> getFields() as $name => $field){
 			$modelField = $field -> new();
-			$modelField -> setModel($this);
+			$modelField -> setObjectModel($this);
 			// $this -> setField($name,$modelField);
 		}
 	}
@@ -238,6 +238,10 @@ class Model{
 		return new $repository(static::class,$alias);
 	}
 
+	public function getClass(){
+		return get_class($this);
+	}
+	
 	/**
 	 * Get schema
 	 *

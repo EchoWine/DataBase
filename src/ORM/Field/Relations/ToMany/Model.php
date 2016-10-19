@@ -48,7 +48,7 @@ class Model extends FieldModel{
 	 */
 	public function add($model){
 
-		$model -> getFieldByColumn($this -> getSchema() -> getReference()) -> setValue($this -> getModel());
+		$model -> getFieldByColumn($this -> getSchema() -> getReference()) -> setValue($this -> getObjectModel());
 		$this -> addValue($model);
 		$this -> addValueToSave($model);
 	}
@@ -160,7 +160,7 @@ class Model extends FieldModel{
         $ob = new $relation();
         $ob -> {$collection} = $model;
         $field = $relation::schema() -> getFieldByColumn($schema -> getReference());
-        $ob -> {$field -> getName()} = $this -> getModel();
+        $ob -> {$field -> getName()} = $this -> getObjectModel();
         $model = $ob; 
 		foreach($this -> getValue() as $n => $_model){
 
@@ -188,7 +188,7 @@ class Model extends FieldModel{
 
 		foreach($this -> getValueToSave() as $value){
 			$field = $this -> getSchema() -> getReference();
-			$value -> {$field} = $this -> getModel() -> getPrimaryField() -> getValue();
+			$value -> {$field} = $this -> getObjectModel() -> getPrimaryField() -> getValue();
 			$value -> save();
 		}
 
@@ -217,8 +217,8 @@ class Model extends FieldModel{
 					if($field -> getSchema() -> getType() == 'to_one'){
 
 
-						if(!$this -> getModel() -> getPrimaryField()){
-							print_r($this -> getModel());
+						if(!$this -> getObjectModel() -> getPrimaryField()){
+							print_r($this -> getObjectModel());
 							die('...');
 						}
 
@@ -256,7 +256,7 @@ class Model extends FieldModel{
 		$reference = $this -> getSchema() -> getReference();
 
 		# The primary field of this model
-		$model_primary = $this -> getModel() -> getPrimaryField();
+		$model_primary = $this -> getObjectModel() -> getPrimaryField();
 
 		# Column name of the $field
 		$field_column = $field -> getSchema() -> getColumn();
@@ -312,7 +312,7 @@ class Model extends FieldModel{
 			$reference = $this -> getSchema() -> getReference();
 			
 			# The primary field of this model
-			$model_primary = $this -> getModel() -> getPrimaryField();
+			$model_primary = $this -> getObjectModel() -> getPrimaryField();
 
 			if($model_primary -> getValue()){
 

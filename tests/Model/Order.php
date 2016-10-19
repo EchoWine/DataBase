@@ -25,7 +25,7 @@ class Order extends Model{
         $schema -> string('transaction')
                 -> required();
 
-        $schema -> toMany(OrderBook::class,'ordersbooks','order_id')
+        $schema -> toMany(OrderBook::class,'orders_books','order_id')
                 -> to('books','book');
 
         

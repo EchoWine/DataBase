@@ -32,7 +32,7 @@ class Book extends Model{
 
         $schema -> toOne(Isbn::class,'isbn','isbn_code','code') -> required();
 
-        $schema -> toMany(OrderBook::class,'booksorders','book_id')
+        $schema -> toMany(OrderBook::class,'books_orders','book_id')
                 -> to('orders','order');
 
     }

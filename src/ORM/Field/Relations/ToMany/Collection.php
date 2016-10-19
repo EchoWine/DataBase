@@ -31,10 +31,18 @@ class Collection extends BaseCollection{
         return $this -> model;
     }
 
+    /**
+     * Add a model
+     *
+     * @param ORM\Model $value
+     */
     public function add($value){
 
 
+        $add = $value;
+
         $schema = $this -> getModel() -> getSchema();
+
 
         if($collection = $schema -> getCollection()){
 
@@ -42,10 +50,11 @@ class Collection extends BaseCollection{
             $ob = new $relation();
             $ob -> {$collection} = $value;
             
-            $value = $ob; 
-        }   
+            $add = $ob; 
+        }  
 
-        $this -> getModel() -> add($value);
+        if(!$this -> has($value))
+            $this -> getModel() -> add($add);
     }
 
     public function remove($value){
@@ -63,8 +72,9 @@ class Collection extends BaseCollection{
             $ob = new $relation();
             $ob -> {$collection} = $value;
             $field = $relation::schema() -> getFieldByColumn($schema -> getReference());
-            $ob -> {$field -> getName()} = $this -> getModel() -> getModel();
+            $ob -> {$field -> getName()} = $this -> getModel() -> getObjectModel();
             $value = $ob; 
+
             
             foreach($this as $k){
                 if($k -> {$collection} -> equalTo($value -> {$collection}) && $k -> {$field -> getName()} == $value -> {$field -> getName()}){
@@ -75,8 +85,13 @@ class Collection extends BaseCollection{
             return false;
         }   
 
+        foreach($this as $k){
+            if($k -> equalTo($value)){
+                return true;
+            }
+        }
 
-        return parent::has($value);
+        return false;
     }
 
     public function all(){
@@ -103,5 +118,15 @@ class Collection extends BaseCollection{
     public function sync($values){
         $this -> getModel() -> setValue($values);
         $this -> save();
+    }
+
+    public function __toString(){
+        $collection = [];
+
+        foreach($this as $k){
+            $collection[] = $k -> toArray();
+        }
+
+        return json_encode($collection);
     }
 }

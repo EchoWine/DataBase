@@ -12,7 +12,7 @@ class Model{
 	/**
 	 * Model
 	 */
-	public $model;
+	public $object_model;
 
 	/**
 	 * has value raw
@@ -54,6 +54,22 @@ class Model{
 	}
 
 	/**
+	 * Set Model
+	 */
+	public function setObjectModel($model){
+		$this -> object_model = $model;
+		$this -> iniAlias();
+		$model -> setField($this -> getSchema() -> getName(),$this);
+	}
+
+	/**
+	 * Return the model
+	 */
+	public function getObjectModel(){
+		return $this -> object_model;
+	}
+
+	/**
 	 * Get type
 	 *
 	 * @return string
@@ -62,14 +78,6 @@ class Model{
 		$this -> getSchema() -> getType();
 	}
 
-	/**
-	 * Set Model
-	 */
-	public function setModel($model){
-		$this -> model = $model;
-		$this -> iniAlias();
-		$model -> setField($this -> getSchema() -> getName(),$this);
-	}
 
 	/**
 	 * Initialize alias
@@ -99,13 +107,6 @@ class Model{
 	 */
 	public function getAlias(){
 		return $this -> alias;
-	}
-
-	/**
-	 * Return the model
-	 */
-	public function getModel(){
-		return $this -> model;
 	}
 
 	/**
@@ -259,7 +260,7 @@ class Model{
 			$i = 0;
 			do{
 				$value_copied = $this -> parseValueCopy($value,$i++);
-				$res = $this -> getModel() -> getRepository() -> exists([$this -> getSchema() -> getColumn() => $value_copied]);
+				$res = $this -> getObjectModel() -> getRepository() -> exists([$this -> getSchema() -> getColumn() => $value_copied]);
 				
 			}while($res);
 

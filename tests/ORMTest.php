@@ -65,9 +65,10 @@ class ORMTest extends TestCase{
 
         $book -> save();
         
-
         $book = Book::first();
-        
+
+
+
         $this -> assertEquals($book -> author -> name,"Ban");
         $this -> assertEquals($book -> isbn -> code,"978-3-16-148410-0");
 
@@ -79,10 +80,14 @@ class ORMTest extends TestCase{
 
     public function testAdvancedRelations(){
         
+        echo "\n";
+        echo "\n";
+
         $author = Author::first();
         $book = new Book;
         $book -> title = "Eragon";
         $book -> isbn = new Isbn();
+
         $book -> isbn -> code = "978-4-16-148410-0";
         $book -> isbn -> save();
 
@@ -92,6 +97,7 @@ class ORMTest extends TestCase{
         $author -> books -> add($book);
         $author -> books[] = $book;
         $author -> books -> save();
+
 
 
         //$author -> books -> sync([$book]);
@@ -119,7 +125,6 @@ class ORMTest extends TestCase{
         $book -> orders -> add($order);
         $book -> orders -> save();
 
-        print_r(\CoreWine\DataBase\DB::log(true));
 
 
         
