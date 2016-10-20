@@ -1,17 +1,35 @@
-- More tests
-- More fields
-- Delete column not defined in schema ? (config)
-- Cascade operation
-- Automatic created_at/updated_at in ORM
-- Basic fields automatically loaded without config?
-- Improve array rapresentation (with/without relations)
+Documentation:
+	- Restyling
+	- ORM
 
+Tests:
+	- More tests
 
-- Add ManyToMany (remove collection alias in toMany), with and without Model defined
-- Add belongsToOne (Inversed of toOne)
-- Add belongsToMany (Inverded of Many) == toOne
-- Fix toMany bugs
-- Field File
-- Events Field
-- Events Model
-- Use a specific Collection (extends CollectionResult) defined in Model
+Model:
+	- Improve events
+
+Repository:
+	- Improve relations
+	- Add with
+	- Add Union
+	- Cascade operation ?
+
+Fields:
+	- Use field without a Model ?
+	- Improve events
+	- Improve setValue/parseValue
+	- Improve value/raw_value
+	- Add Date
+	- Add Time
+	- Add ManyToMany
+	- Add BelongsToOne
+	- Improve toMany
+		- Improve integration with Collection
+		- Add link to repository
+
+	- Improve File
+		- Improve config path
+		- Improve get path
+		- Check events
+		- Control name before upload, throw exception
+	- Add Collection

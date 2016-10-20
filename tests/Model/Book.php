@@ -34,6 +34,9 @@ class Book extends Model{
 
         $schema -> toMany(OrderBook::class,'books_orders','book_id')
                 -> to('orders','order');
+                
+        $schema -> updated_at();
+        $schema -> created_at();
 
     }
 }

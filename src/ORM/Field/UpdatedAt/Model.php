@@ -16,7 +16,7 @@ class Model extends FieldModel{
 		return [
 			'save' => function($model){
 
-				$this -> value = (new \DateTime()) -> format('Y-m-d H:i:s');
+				$this -> setValue(new \DateTime());
 				
 			}
 		];

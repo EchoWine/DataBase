@@ -35,6 +35,9 @@ class ORMTest extends TestCase{
             'timestamp' => CoreWine\DataBase\ORM\Field\Timestamp\Schema::class,
             'text' => CoreWine\DataBase\ORM\Field\Text\Schema::class,
             'email' => CoreWine\DataBase\ORM\Field\Email\Schema::class,
+            'datetime' => CoreWine\DataBase\ORM\Field\DateTime\Schema::class,
+            'updated_at' => CoreWine\DataBase\ORM\Field\UpdatedAt\Schema::class,
+            'created_at' => CoreWine\DataBase\ORM\Field\CreatedAt\Schema::class,
         ]);
 
         Author::truncate();
@@ -42,6 +45,23 @@ class ORMTest extends TestCase{
         Isbn::truncate();
         Order::truncate();
         OrderBook::truncate();
+    }
+
+    public function testFields(){
+
+        $book = new Book();
+        $book -> title = "The Hitchhiker's Guide to the Galaxy";
+
+        $time = new \DateTime();
+
+        $book -> save();
+
+        $book = Book::first();
+
+        $this -> assertEquals($book -> created_at -> format('d-m-Y'),$time -> format('d-m-Y'));
+        
+        $book -> delete();
+
     }
 
     public function testBasicRelations(){
@@ -80,8 +100,6 @@ class ORMTest extends TestCase{
 
     public function testAdvancedRelations(){
         
-        echo "\n";
-        echo "\n";
 
         $author = Author::first();
         $book = new Book;
@@ -120,13 +138,21 @@ class ORMTest extends TestCase{
         $order -> books -> remove($book);
         $order -> books -> save();
 
-        $book = Book::first();
+        $book = Book::create([
+            'title' => 'New new new'
+        ]);
 
         $book -> orders -> add($order);
         $book -> orders -> save();
 
+        /*
+        foreach($book -> orders as $order){
+            echo $order;
+        }
+        */
 
 
-        
+        //$order -> orders_books() -> where('book_id',1) -> get() -> retrieve('books',true);
+       
     }
 }

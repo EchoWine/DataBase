@@ -110,6 +110,7 @@ class Model extends FieldModel{
 	public function setValueRaw($value){
 		$this -> value_raw = $value;
 	}
+	
 	/**
 	 * Set the value
 	 *
