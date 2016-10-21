@@ -59,8 +59,8 @@ class Model extends FieldModel{
 	 * @param ORM\Model $model
 	 */
 	public function addValue($model){
-		$index = count($this -> value);
-		$this -> value[$index] = $model;
+		$index = count($this -> value_out);
+		$this -> value_out[$index] = $model;
 	}
 
 	/**
@@ -69,7 +69,7 @@ class Model extends FieldModel{
 	 * @param ORM\Model $model
 	 */
 	public function removeValue($index){
-		unset($this -> value[$index]);
+		unset($this -> value_out[$index]);
 	}
 
 	/**
@@ -195,15 +195,36 @@ class Model extends FieldModel{
 	}
 
 	/**
-	 * Set the value raw by repository
+	 * Set value
+	 */
+	public function setValueOut($value = null){
+
+		$c = new Collection($value);
+
+		$c -> setModel($this);
+
+		$this -> value_out = $c;
+	}
+
+
+	/**
+	 * get the value raw from repository
 	 *
 	 * @return mixed
 	 */
-	public function setValueRawFromRepository($row,$persist = false,$relations = []){
+	public function getValueRawFromRepository($row,$relations = []){
 		
-		# In this case $row and $value_raw is useless, because the entire value is retrieved using relations
-		$this -> value_raw = null;
+		return null;
+	}
 
+
+	/**
+	 * get the value raw from repository
+	 *
+	 * @return mixed
+	 */
+	public function getValueOutFromRepository($row,$relations = []){
+		
 		$value = [];
 
 		$relation = $this -> getSchema() -> getRelation();
@@ -233,12 +254,9 @@ class Model extends FieldModel{
 			}
 		}
 
-		if(!$persist){
-			
-			$this -> setValue($this -> parseRawToValue($value),false);
-			$this -> persist = $persist;
-		}
+		return $value;
 	}
+
 
 	/**
 	 * Given the field and the result return if this is the relation
@@ -269,36 +287,6 @@ class Model extends FieldModel{
 		return $reference == $field_column && $model_primary -> getValueRaw() == $result_reference -> getValueRaw();					
 	}
 
-	/**
-	 * Set the value raw
-	 *
-	 * @return mixed
-	 */
-	public function setValueRawToRepository($value_raw,$persist = false){
-
-		$this -> value_raw = null;
-
-		if(!$persist){
-			$this -> setValue($this -> parseRawToValue($value_raw),false);
-			$this -> persist = $persist;
-		}
-	}
-
-	/**
-	 * Parse the value from raw to value
-	 *
-	 * @param mixed $value
-	 *
-	 * @return mixed
-	 */
-	public function parseRawToValue($value){
-
-
-		$c = new Collection($value);
-
-		$c -> setModel($this);
-		return $c;
-	}
 
 	/**
 	 * Get the value
@@ -319,16 +307,14 @@ class Model extends FieldModel{
 
 				
 				$v = $this -> getSchema() -> getRelation()::where($reference,$model_primary -> getValue()) -> get();
-				$v = new Collection($v);
-				$v -> setModel($this);
-				$this -> value = $v;
+				$this -> setValueOut($v);
 				$this -> value_updated = true;
 			}
 
 		}
 
 
-		return $this -> value;
+		return $this -> getValueOut();
 	}
 
 	/**

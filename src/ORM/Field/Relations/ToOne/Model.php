@@ -28,69 +28,80 @@ class Model extends FieldModel{
 	}
 
 	/**
-	 * Set the value raw by repository
+	 * Retrieve a value raw given a value out
 	 *
-	 * Given $row and $relations this method must set the current value of field
-	 *
-	 * @param array $row list of all columns value retrieved in previous query
-	 * @param bool $persist
-	 * @param array $relation list of all results retrieved with previous joins query
+	 * @param mixed $value
 	 *
 	 * @return mixed
 	 */
-	public function setValueRawFromRepository($row,$persist = false,$relations = []){
-		
-		$column = $this -> getSchema() -> getColumn();
+	public function getValueRawByValueOut($value){
+
+		if(is_object($value)){
+
+			if(get_class($value) !== $this -> getSchema() -> getRelation()){
+
+				throw new \Exception(basename($this -> getObjectModel() -> getClass()).
+					" Incorrect object assigned to field: ". 
+					basename($this -> getSchema() -> getRelation())." != ".basename(get_class($value_raw)));
+			}
+
+			if($value)
+				return $value -> getFieldByColumn($this -> getSchema() -> getRelationColumn()) -> getValue();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Retrieve a value out given a value raw
+	 *
+	 * @param mixed $value
+	 *
+	 * @return mixed
+	 */
+	public function getValueOutByValueRaw($value){
+
 		$relation = $this -> getSchema() -> getRelation();
 		$relation_column = $this -> getSchema() -> getRelationColumn();
 
-		$value = null;
+		return $relation::where($relation_column,$value) -> first();
+	}
 
-		$this -> value_raw = null;
+	/**
+	 * get the value raw from repository
+	 *
+	 * @return mixed
+	 */
+	public function getValueRawFromRepository($row,$relations = []){
+		
+		return isset($row[$this -> getSchema() -> getColumn()]) ? $row[$this -> getSchema() -> getColumn()] : null;
+	}
 
-		if(isset($row[$column]))
-			$this -> value_raw = $row[$column];
+
+	/**
+	 * get the value raw from repository
+	 *
+	 * @return mixed
+	 */
+	public function getValueOutFromRepository($row,$relations = []){
+
+		$value_raw = $this -> getValueRaw();
+		$relation = $this -> getSchema() -> getRelation();
+		$relation_column = $this -> getSchema() -> getRelationColumn();
 
 		if(isset($relations[$relation])){
 
 			foreach($relations[$relation] as $rel){
-				if($rel -> getFieldByColumn($relation_column) -> getValue() == $this -> value_raw){
-					$value = $rel;
-					break;
+				if($rel -> getFieldByColumn($relation_column) -> getValue() == $value_raw){
+					return $rel;
 				}
 			}
 		}
 
-		if(!$persist && $value){
-
-			$this -> setValue($this -> parseRawToValue($value),false);
-			$this -> persist = $persist;
-		}
+		return null;
 	}
 
-	/**
-	 * Set the value raw
-	 *
-	 * @return mixed
-	 */
-	public function setValueRawToRepository($value_raw,$persist = false){
 
-		if(is_object($value_raw)){
-
-			if(get_class($value_raw) !== $this -> getSchema() -> getRelation())
-				throw new \Exception("Incorrect object assigned to field");
-
-			if($value_raw)
-				$value_raw = $value_raw -> getFieldByColumn($this -> getSchema() -> getRelationColumn()) -> getValue();
-		}
-
-		$this -> value_raw = $value_raw;
-
-		if(!$persist){
-			$this -> setValue($this -> parseRawToValue($value_raw),false);
-			$this -> persist = $persist;
-		}
-	}
 
 
 	/**
@@ -107,9 +118,6 @@ class Model extends FieldModel{
 		return $this -> value_raw;
 	}
 
-	public function setValueRaw($value){
-		$this -> value_raw = $value;
-	}
 	
 	/**
 	 * Set the value
@@ -117,34 +125,26 @@ class Model extends FieldModel{
 	 * @param mixed $value
 	 * @param bool $persist
 	 */
-	public function setValue($value = null,$persist = true){
+	public function setValue($value = null){
 		
-		if($value)
-			$this -> value_updated = true;
+		if(is_object($value)){
+			
+			$this -> setValueByValueOut($value);
 
-		# Improve check correct instance of
-		if(!is_object($value)){
-			$this -> setValueRawToRepository($value,true);
-			$this -> value = null;
-			$this -> persist = $persist;
-			return;
-		}
-		
-		if(get_class($value) !== $this -> getSchema() -> getRelation()){
-			throw new \Exception(basename($this -> getObjectModel() -> getClass()).
-				" Incorrect object assigned to field: ". 
-				basename($this -> getSchema() -> getRelation())." != ".basename(get_class($value)));
+			if($value){
+
+				$this -> value_updated = true;
+				$this -> last_value_relation = $value -> {$this -> getSchema() -> getRelationColumn()};
+			}
+
+			return null;
 		}
 
-		$this -> value = $value;
+		$this -> value_updated = true;
+		$this -> setValueByValueRaw($value);
+		return null;
 
-		if($value)
-			$this -> last_value_relation = $value -> {$this -> getSchema() -> getRelationColumn()};
 
-		if($persist){
-			$this -> setValueRawToRepository($this -> parseValueToRaw($value),true);
-			$this -> persist = $persist;
-		}
 	}
 
 
@@ -162,12 +162,13 @@ class Model extends FieldModel{
 		
 		if(!$this -> value_updated && $this -> getValueRaw()){
 
-			$this -> value = $this -> getSchema() -> getRelation()::where($this -> getSchema() -> getRelationColumn(),$this -> getValueRaw()) -> first();
+			$r = $this -> getValueOutByValueRaw($this -> getValueRaw());
+			$this -> setValueOut($r);
 			$this -> value_updated = true;
 
 		}
 
-		return $this -> value;
+		return $this -> getValueOut();
 	}
 
 	/**
@@ -190,33 +191,6 @@ class Model extends FieldModel{
 	 */
 	public function getNameToArray(){
 		return $this -> getSchema() -> getColumn();
-	}
-
-	/**
-	 * Check persist
-	 *
-	 * Re-check the current status of persist. This function is called before save() to check which field put in query
-	 */
-	public function checkPersist(){
-
-		if(!$this -> getValue())
-			return;
-
-		if(!($this -> getValue() instanceof \CoreWine\DataBase\ORM\Model))
-			return;
-
-		$field = $this -> getSchema() -> getRelationColumn();
-		$current = $this -> getValue() -> $field;
-
-
-		# The primary key may be changed
-		if($current != $this -> last_value_relation){
-
-			# Re-Set value
-			$this -> last_alias_called = $this -> getSchema() -> getName();
-			$this -> setValue($this -> getValue());
-			$this -> persist = true;
-		}
 	}
 
 }

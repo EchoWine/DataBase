@@ -574,7 +574,7 @@ class Model{
 	public function fillRawFromRepository($values = [],$relations = []){
 
 		foreach($this -> getFields() as $name => $field){
-			$this -> getField($name) -> setValueRawFromRepository($values,false,$relations);
+			$this -> getField($name) -> setValueFromRepository($values,$relations);
 		}
 
 		return $this;
@@ -714,7 +714,7 @@ class Model{
 
 
 			if(($field = $this -> getAutoIncrementField()) !== null)
-				$field -> setValueRawFromRepository([$field -> getSchema() -> getColumn() => $ai[0]]);
+				$field -> setValueByValueRaw($ai[0]);
 
 			$this -> fireEvent('created',[$this]);
 			$this -> fireEvent('saved',[$this]);

@@ -67,7 +67,7 @@ class ORMTest extends TestCase{
     public function testBasicRelations(){
 
         $book = new Book();
-        $book -> title = "The Hitchhiker's Guide to the Galaxy";
+        $book -> title = "The Holy Bible";
         $book -> save();
 
         $book -> delete();
@@ -86,6 +86,7 @@ class ORMTest extends TestCase{
         $book -> save();
         
         $book = Book::first();
+
 
 
 
@@ -125,6 +126,7 @@ class ORMTest extends TestCase{
         $order -> transaction = '1234567890';
         $order -> save();
 
+        return;
 
         $ob = new OrderBook();
         $ob -> book = $book;

@@ -20,9 +20,9 @@ class Model{
 	public $has_value_raw = true;
 
 	/**
-	 * Value
+	 * Value out
 	 */
-	public $value;
+	public $value_out;
 
 	/**
 	 * Value raw
@@ -47,9 +47,9 @@ class Model{
 	/**
 	 * Construct
 	 */
-	public function __construct($schema,$value){
+	public function __construct($schema,$value_out){
 		$this -> schema = $schema;
-		$this -> value = $value;
+		$this -> value_out = $value_out;
 		$this -> persist = $schema -> persist;
 	}
 
@@ -164,6 +164,15 @@ class Model{
 	}
 
 	/**
+	 * Has the value raw
+	 *
+	 * @return mixed
+	 */
+	public function hasValueRaw(){
+		return $this -> has_value_raw;
+	}
+
+	/**
 	 * Set the value raw
 	 *
 	 * @param mixed $value_raw
@@ -182,59 +191,13 @@ class Model{
 	}
 
 	/**
-	 * Has the value raw
-	 *
-	 * @return mixed
-	 */
-	public function hasValueRaw(){
-		return $this -> has_value_raw;
-	}
-
-
-	/**
-	 * Set the value raw by repository
-	 *
-	 * @return mixed
-	 */
-	public function setValueRawToRepository($value_raw,$persist = false){
-
-		$this -> setValueRaw($value_raw);
-
-		if(!$persist){
-			$this -> setValue($this -> parseRawToValue($value_raw),false);
-			$this -> persist = $persist;
-		}
-	}
-
-	/**
-	 * Set the value raw by repository
-	 *
-	 * @return mixed
-	 */
-	public function setValueRawFromRepository($row,$persist = false,$relations = []){
-		
-		$value_raw = isset($row[$this -> getSchema() -> getColumn()]) ? $row[$this -> getSchema() -> getColumn()] : null;
-
-		$this -> setValueRaw($value_raw);
-
-		if(!$persist){
-			$this -> setValue($this -> parseRawToValue($value_raw),false);
-			$this -> persist = $persist;
-		}
-	}
-
-	/**
 	 * Set the value
 	 *
 	 * @param mixed $value
 	 */
-	public function setValue($value = null,$persist = true){
-		$this -> value = $value;
+	public function setValueOut($value_out = null){
+		$this -> value_out = $value_out;
 
-		if($persist){
-			$this -> setValueRawToRepository($this -> parseValueToRaw($value),true);
-			$this -> persist = $persist;
-		}
 	}
 
 	/**
@@ -242,8 +205,107 @@ class Model{
 	 *
 	 * @return mixed
 	 */
+	public function getValueOut(){
+		return $this -> value_out;
+	}
+
+	/**
+	 * Set value
+	 */
+	public function setValue($value){
+		return $this -> setValueByValueOut($value);
+	}
+
+	/**
+	 * Get value
+	 */
 	public function getValue(){
-		return $this -> value;
+		return $this -> getValueOut();
+	}
+
+
+	/**
+	 * Retrieve a value raw given a value out
+	 *
+	 * @param mixed $value
+	 *
+	 * @return mixed
+	 */
+	public function getValueRawByValueOut($value){
+		return $value;
+	}
+
+	/**
+	 * Retrieve a value raw given a value out
+	 *
+	 * @param mixed $value
+	 *
+	 * @return mixed
+	 */
+	public function getValueOutByValueRaw($value){
+		return $value;
+	}
+
+
+	/**
+	 * Set the value from repository
+	 *
+	 * @return mixed
+	 */
+	public function setValueByValueRaw($value_raw){
+
+		$value_out = $this -> getValueOutByValueRaw($value_raw);
+
+		$this -> setValueRaw($value_raw);
+		$this -> setValueOut($value_out);
+	}
+
+	/**
+	 * Set the value from repository
+	 *
+	 * @return mixed
+	 */
+	public function setValueByValueOut($value_out){
+
+		$value_raw = $this -> getValueRawByValueOut($value_out);
+
+		$this -> setValueRaw($value_raw);
+		$this -> setValueOut($value_out);
+	}
+
+	/**
+	 * get the value raw from repository
+	 *
+	 * @return mixed
+	 */
+	public function setValueFromRepository($row,$relations = []){
+		
+		$value_raw = $this -> getValueRawFromRepository($row,$relations);
+		$this -> setValueRaw($value_raw);
+
+		$value_out = $this -> getValueOutFromRepository($row,$relations);
+		$this -> setValueOut($value_out);
+	}
+
+	/**
+	 * get the value raw from repository
+	 *
+	 * @return mixed
+	 */
+	public function getValueRawFromRepository($row,$relations = []){
+		
+		return isset($row[$this -> getSchema() -> getColumn()]) ? $row[$this -> getSchema() -> getColumn()] : null;
+	}
+
+
+	/**
+	 * get the value raw from repository
+	 *
+	 * @return mixed
+	 */
+	public function getValueOutFromRepository($row,$relations = []){
+		
+		return $this -> getValueOutByValueRaw($this -> value_raw);
 	}
 
 	/**
@@ -270,18 +332,6 @@ class Model{
 		$this -> setValue($value);
 	}
 
-
-	/**
-	 * Parse the value for data
-	 *
-	 * @param mixed $value
-	 *
-	 * @return value parsed
-	 */
-	public function parseValue($value){
-		return $value;
-	}
-
 	/**
 	 * Get the value used in array
 	 *
@@ -305,28 +355,6 @@ class Model{
 	}
 
 	/**
-	 * Parse the value for add
-	 *
-	 * @param mixed $value
-	 *
-	 * @return value parsed
-	 */
-	public function parseValueAdd($value){
-		return $this -> parseValue($value);
-	}
-
-	/**
-	 * Parse the value for edit
-	 *
-	 * @param mixed $value
-	 *
-	 * @return value parsed
-	 */
-	public function parseValueEdit($value){
-		return $this -> parseValue($value);
-	}
-
-	/**
 	 * Parse the value for edit
 	 *
 	 * @param mixed $value
@@ -336,28 +364,6 @@ class Model{
 	 */
 	public function parseValueCopy($value,$i){
 		return $value."_".$i;
-	}
-	
-	/**
-	 * Parse the value from raw to value
-	 *
-	 * @param mixed $value
-	 *
-	 * @return mixed
-	 */
-	public function parseRawToValue($value){
-		return $value;
-	}
-
-	/**
-	 * Parse the value from value to raw
-	 *
-	 * @param mixed $value
-	 *
-	 * @return mixed
-	 */
-	public function parseValueToRaw($value){
-		return $value;
 	}
 
 	/**

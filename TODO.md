@@ -17,12 +17,14 @@ Repository:
 Fields:
 	- Use field without a Model ?
 	- Improve events
-	- Improve setValue/parseValue
-	- Improve value/raw_value
+	- [x] Improve setValue/parseValue
+	- [x] Improve value/raw_value
 	- Add Date
 	- Add Time
 	- Add ManyToMany
 	- Add BelongsToOne
+	- Improve toOne
+		- [ ] Add "persist"
 	- Improve toMany
 		- Improve integration with Collection
 		- Add link to repository
