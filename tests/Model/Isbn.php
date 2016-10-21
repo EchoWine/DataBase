@@ -24,6 +24,8 @@ class Isbn extends Model{
 
         $schema -> string('type');
 
+        $schema -> belongsToOne('book',[Book::class => 'isbn']);
+
     }
 }
 

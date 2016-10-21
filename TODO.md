@@ -15,6 +15,7 @@ Repository:
 	- Cascade operation ?
 
 Fields:
+	- Add stack to persist/save/remove
 	- Use field without a Model ?
 	- Improve events
 	- [x] Improve setValue/parseValue

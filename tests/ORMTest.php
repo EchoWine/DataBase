@@ -29,6 +29,7 @@ class ORMTest extends TestCase{
         SchemaBuilder::setFields([
             'toOne' => CoreWine\DataBase\ORM\Field\Relations\ToOne\Schema::class,
             'toMany' => CoreWine\DataBase\ORM\Field\Relations\ToMany\Schema::class,
+            'belongsToOne' => CoreWine\DataBase\ORM\Field\Relations\BelongsToOne\Schema::class,
             'throughMany' => CoreWine\DataBase\ORM\Field\Relations\ThroughMany\Schema::class,
             'string' => CoreWine\DataBase\ORM\Field\String\Schema::class,
             'id' => CoreWine\DataBase\ORM\Field\Identifier\Schema::class,
@@ -87,11 +88,27 @@ class ORMTest extends TestCase{
         
         $book = Book::first();
 
-
-
+        $book -> isbn -> book -> title = 'Sponge Documentation';
 
         $this -> assertEquals($book -> author -> name,"Ban");
         $this -> assertEquals($book -> isbn -> code,"978-3-16-148410-0");
+
+        $this -> assertEquals($book -> isbn -> book -> title,'Sponge Documentation');
+
+        $isbn = $book -> isbn;
+        $book -> isbn;
+
+        $isbn -> book = new Book();
+        $isbn -> book -> title = 'PHP Documentation';
+        $isbn -> book -> save();
+
+
+        $this -> assertEquals($book -> isbn,null);
+        $book -> save();
+        
+        $isbn = Isbn::first();
+
+        $this -> assertEquals($isbn -> book -> title,'PHP Documentation');
 
 
         $book -> author = $author;
@@ -100,7 +117,7 @@ class ORMTest extends TestCase{
     }
 
     public function testAdvancedRelations(){
-        
+
 
         $author = Author::first();
         $book = new Book;

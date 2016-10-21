@@ -42,7 +42,7 @@ class Model extends FieldModel{
 
 				throw new \Exception(basename($this -> getObjectModel() -> getClass()).
 					" Incorrect object assigned to field: ". 
-					basename($this -> getSchema() -> getRelation())." != ".basename(get_class($value_raw)));
+					basename($this -> getSchema() -> getRelation())." != ".basename(get_class($value)));
 			}
 
 			if($value)
