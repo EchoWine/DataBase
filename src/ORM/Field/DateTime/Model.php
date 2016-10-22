@@ -3,6 +3,7 @@
 namespace CoreWine\DataBase\ORM\Field\DateTime;
 
 use CoreWine\DataBase\ORM\Field\Field\Model as FieldModel;
+use CoreWine\Component\DateTime;
 
 class Model extends FieldModel{
 
@@ -18,7 +19,7 @@ class Model extends FieldModel{
 
 		if(is_object($value)){
 
-			if(!$value instanceof \DateTime){
+			if(!$value instanceof DateTime){
 				# Some errors...
 			}
 
@@ -39,7 +40,7 @@ class Model extends FieldModel{
 	 */
 	public function getValueOutByValueRaw($value){
 
-		$value = \DateTime::createFromFormat('Y-m-d H:i:s',$value);
+		$value = DateTime::createFromFormat('Y-m-d H:i:s',$value);
 
 		return $value;
 	}
