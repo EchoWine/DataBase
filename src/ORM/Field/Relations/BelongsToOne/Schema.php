@@ -35,13 +35,6 @@ class Schema extends FieldSchema{
 	}
 
 	/**
-	 * New
-	 */
-	public static function factory($name = null,$relations = null){
-		return new static($name,$relations);
-	}
-
-	/**
 	 * Retrieve field relation using model
 	 *
 	 * @param ORM\Model $model

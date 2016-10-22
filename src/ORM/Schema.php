@@ -171,6 +171,15 @@ class Schema{
 	 * @return ORM\Field\Schema\Field
 	 */
 	public function getPrimaryField(){
+		return $this -> getFieldPrimary();
+	}
+
+	/**
+	 * Get primary field
+	 *
+	 * @return ORM\Field\Schema\Field
+	 */
+	public function getFieldPrimary(){
 		foreach($this -> getFields() as $field){
 			if($field -> getPrimary())
 				return $field;

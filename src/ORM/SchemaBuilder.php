@@ -93,7 +93,7 @@ class SchemaBuilder{
 			$class = $this -> getField($method);
 			if(is_subclass_of($class,FieldSchema::class)){
 
-
+			
 				$field = call_user_func_array($class.'::factory', $arguments);
 				$field -> addToModelSchema($this -> getSchema());
 				return $field;

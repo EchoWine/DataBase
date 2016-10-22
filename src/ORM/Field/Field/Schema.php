@@ -154,6 +154,13 @@ class Schema{
 	public $object_schema;
 
 	/**
+	 * Schema object
+	 *
+	 * @var Schema
+	 */
+	public $object_class;
+
+	/**
 	 * Regex of field
 	 */
 	public $regex = null;
@@ -184,6 +191,18 @@ class Schema{
 
 	public function getObjectSchema(){
 		return $this -> object_schema;
+	}
+
+	public function setObjectClass($object_class){
+		$this -> object_class = $object_class;
+	}
+
+	public function getObjectClass(){
+		return $this -> object_class;
+	}
+
+	public function boot(){
+
 	}
 
 
@@ -233,8 +252,9 @@ class Schema{
 	/**
 	 * New
 	 */
-	public static function factory($name = null){
-		return new static($name);
+	public static function factory($params = null){
+		$r = new \ReflectionClass(static::class);
+		return $r -> newInstanceArgs(func_get_args());
 	}
 
 	/**

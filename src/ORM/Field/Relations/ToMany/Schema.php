@@ -83,13 +83,6 @@ class Schema extends FieldSchema{
 		return $this;
 	}
 
-	/**
-	 * New
-	 */
-	public static function factory($relation = null,$name = null,$reference = null){
-		return new static($relation,$name,$reference);
-	}
-
 	public function to($name,$relation_name){
 		$this -> name = $name;
 		$this -> label = $name;

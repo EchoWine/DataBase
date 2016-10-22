@@ -70,7 +70,7 @@ class Repository extends QueryBuilder{
 					
 				}
 
-				$return[] = $model;
+				$return[$n] = $model;
 			}
 
 			/*

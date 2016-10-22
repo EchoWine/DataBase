@@ -125,8 +125,10 @@ class Model{
 		
 		if($this -> isField($attribute)){
 			$this -> getField($attribute) -> setValue($value);
+			return;
 		}
 		
+		$this -> {$attribute} = $value;
 	}
 
 	/**
@@ -225,12 +227,19 @@ class Model{
 
 		static::$schema = $schema;
 		static::fields(new SchemaBuilder($schema));
-		static::repository() -> alterSchema();
+		
+		foreach(static::schema() -> getFields() as $field){
+			$field -> setObjectSchema(static::schema());
+			$field -> setObjectClass(static::class);
+		}
+
 		static::boot();
 
 		foreach(static::schema() -> getFields() as $field){
-			$field -> setObjectSchema(static::schema());
+			$field -> boot();
 		}
+		
+		static::repository() -> alterSchema();
 
 		if(!$schema -> getPrimaryField())
 			throw new \Exception("Missing primary field in ".get_called_class());

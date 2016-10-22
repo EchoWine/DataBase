@@ -32,8 +32,14 @@ class Book extends Model{
 
         $schema -> toOne(Isbn::class,'isbn','isbn_code','code') -> required();
 
-        $schema -> toMany(OrderBook::class,'books_orders','book_id')
-                -> to('orders','order');
+        $schema -> throughMany('orders',Order::class) -> resolver(OrderBook::class,'book','order');
+
+        // $schema -> throughMany('orders',Order::class,'id','id');
+        // $schema -> throughMany('orders',Order::class) -> inModel(OrderBook::class)
+        // $schema -> throughMany('orders',Order::class) -> inTable('orders_books')
+        // $this -> orders -> add(Order $order);
+        // $this -> orders // Collection orders
+        // $this -> orders -> get(0) -> pivot. OrderBoook
                 
         $schema -> updated_at();
         $schema -> created_at();

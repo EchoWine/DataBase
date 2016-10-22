@@ -25,9 +25,8 @@ class Order extends Model{
         $schema -> string('transaction')
                 -> required();
 
-        $schema -> toMany(OrderBook::class,'orders_books','order_id')
-                -> to('books','book');
 
+        $schema -> throughMany('books',Book::class) -> resolver(OrderBook::class,'order','book');
         
     }
 }

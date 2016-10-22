@@ -56,6 +56,7 @@ class ORMTest extends TestCase{
         $time = new \DateTime();
 
         $book -> save();
+        $this -> assertEquals($book -> id,1);
 
         $book = Book::first();
 
@@ -141,8 +142,8 @@ class ORMTest extends TestCase{
         $order = new Order();
         $order -> transaction = '1234567890';
         $order -> save();
+        $this -> assertEquals($order -> id,1);
 
-        return;
 
         $ob = new OrderBook();
         $ob -> book = $book;
@@ -151,8 +152,14 @@ class ORMTest extends TestCase{
 
         $order = Order::where('id',1) -> first();
 
+        foreach($order -> books as $book){
+        }
+
+
 
         $order -> books -> add($book2);
+        
+
         $order -> books -> remove($book);
         $order -> books -> save();
 

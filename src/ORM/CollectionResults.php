@@ -57,4 +57,11 @@ class CollectionResults extends Collection{
     public function getPagination(){
     	return $this -> getRepository() -> getPagination();
     }
+
+    public function select($field_name){
+        return $this -> map(function($val) use($field_name){
+            return $val[$field_name];
+        });
+    }
+
 }
