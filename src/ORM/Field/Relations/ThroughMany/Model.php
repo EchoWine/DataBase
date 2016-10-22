@@ -101,7 +101,7 @@ class Model extends FieldModel{
 
 	public function checkInstanceValueClass($model){
 		if(get_class($model) != $this -> getSchema() -> getResolver() -> end -> model){
-			throw new \Exception("Error");
+			throw new \Exception($this -> getSchema() -> getResolver() -> end -> model." != ".get_class($model));
 		}
 	}
 
