@@ -72,6 +72,14 @@ class Model{
 	];
 
 	/**
+	 * Stack save
+	 *
+	 * @param array
+	 */
+	public $persist_stack = ['save' => [], 'delete' => []];
+
+
+	/**
 	 * Construct
 	 */
 	public function __construct(){
@@ -730,6 +738,8 @@ class Model{
 		$this -> setPersist(0);
 
 
+		$this -> persistStack('save');
+
 		return $this;
 
 	}
@@ -790,12 +800,15 @@ class Model{
 	 */
 	public function delete(){
 
+
 		if($this -> getPersist())
 			return null;
 
 		$this -> setPersist(1);
 
 		$this -> wherePrimaryByRepository($this -> getRepository()) -> delete();
+
+		$this -> persistStack('delete');
 	}
 
 	/**
@@ -898,6 +911,17 @@ class Model{
 			}
 		}
 
+	}
+
+	public function addPersistStack($operation,$model){
+		$this -> persist_stack[$operation][] = $model;
+	}
+
+	public function persistStack($operation){
+
+		foreach((array)$this -> persist_stack[$operation] as $k){
+			$k -> {$operation}();
+		}
 	}
 }
 

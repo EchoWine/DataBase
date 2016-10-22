@@ -49,6 +49,7 @@ class Model extends FieldModel{
 		$old_value = $this -> getObjectModel() -> getField($this -> getSchema() -> getName()) -> getValue();
 		if($old_value){
 			$old_value -> {$field} = null;
+			$value -> addPersistStack('save',$old_value);
 		}
 
 

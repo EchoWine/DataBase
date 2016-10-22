@@ -104,7 +104,6 @@ class ORMTest extends TestCase{
 
 
         $this -> assertEquals($book -> isbn,null);
-        $book -> save();
         
         $isbn = Isbn::first();
 
