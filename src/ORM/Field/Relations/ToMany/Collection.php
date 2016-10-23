@@ -13,6 +13,14 @@ class Collection extends BaseCollection{
      */
     protected $model;
 
+    protected $persist_stack;
+
+    public function __construct($array){
+        parent::__construct($array);
+        $this -> persist_stack = new BaseCollection();
+        $this -> persist_stack['save'] = new BaseCollection();
+    }
+
     /**
      * Set model field
      *
@@ -31,6 +39,59 @@ class Collection extends BaseCollection{
         return $this -> model;
     }
 
+
+    public function addPersistStack($operation,$model){
+        $this -> persist_stack[$operation][] = $model;
+    }
+
+    public function removePersistStack($operation,$model){
+        $this -> persist_stack[$operation] -> remove($model);
+    }
+
+    public function persistStack($operation){
+
+        foreach($this -> persist_stack[$operation] as $k){
+            $k -> {$operation}();
+        }
+    }
+
+    public function checkInstanceValueClass($value){
+        $this -> getModel() -> checkInstanceValueClass($value);
+    }
+
+    /**
+     * Retrieve index
+     *
+     * @param ORM\Model $value
+     *
+     * @return int
+     */
+    public function index($value){
+        $this -> checkInstanceValueClass($value);
+
+        foreach($this as $n => $k){
+            if($k -> equalTo($value)){
+                return $n;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Has a model ?
+     *
+     * @param ORM\Model $value
+     *
+     * @return boolean
+     */
+    public function has($value){
+        $this -> checkInstanceValueClass($value);
+
+        return $this -> index($value) ? true : false;
+    }
+
+
     /**
      * Add a model
      *
@@ -38,85 +99,86 @@ class Collection extends BaseCollection{
      */
     public function add($value){
 
-
-        $add = $value;
-
-        $schema = $this -> getModel() -> getSchema();
-
-
-        if($collection = $schema -> getCollection()){
-
-            $relation = $schema -> getRelation();
-            $ob = new $relation();
-            $ob -> {$collection} = $value;
-            
-            $add = $ob; 
-        }  
-
-        if(!$this -> has($value))
-            $this -> getModel() -> add($add);
+        $this[] = $value;
     }
+    
+    public function offsetSet($index,$value){
 
-    public function remove($value){
+        $this -> checkInstanceValueClass($value);
 
-        $this -> getModel() -> remove($value);
-    }
+        if(!$this -> has($value)){
 
-    public function has($value){
+            $model = $this -> getModel();
+            $resolver = $model -> getSchema() -> getResolver();
 
-        $schema = $this -> getModel() -> getSchema();
 
-        if($collection = $schema -> getCollection()){
+            $value -> {$resolver -> end -> field_to_start -> getName()} = $model -> getObjectModel();
 
-            $relation = $schema -> getRelation();
-            $ob = new $relation();
-            $ob -> {$collection} = $value;
-            $field = $relation::schema() -> getFieldByColumn($schema -> getReference());
-            $ob -> {$field -> getName()} = $this -> getModel() -> getObjectModel();
-            $value = $ob; 
 
-            
-            foreach($this as $k){
-                if($k -> {$collection} -> equalTo($value -> {$collection}) && $k -> {$field -> getName()} == $value -> {$field -> getName()}){
-                    return true;
-                }
-            }
-
-            return false;
-        }   
-
-        foreach($this as $k){
-            if($k -> equalTo($value)){
-                return true;
-            }
+            $this -> addPersistStack('save',$value);
+            parent::offsetSet($index,$value);
         }
-
-        return false;
+        
     }
 
+
+    /**
+     * Remove a model
+     *
+     * @param ORM\Model $value
+     */
+    public function remove($value){
+        $index = $this -> index($value);
+        unset($this[$index]);
+    }
+
+
+    public function offsetUnset($index){
+
+        if(!$this -> exists($index))
+            return;
+
+        $value = $this -> items[$index];
+
+        $this -> checkInstanceValueClass($value);
+
+        $model = $this -> getModel();
+
+        $resolver = $model -> getSchema() -> getResolver();
+
+        $value -> {$resolver -> end -> field_to_start -> getName()} = null;
+
+        $this -> addPersistStack('save',$value);
+        parent::offsetUnset($index);
+
+        
+    }
+
+    /**
+     * Return all models
+     *
+     * @return this
+     */
     public function all(){
-
-        $schema = $this -> getModel() -> getSchema();
-
-        if($collection = $schema -> getCollection()){
-            $return = [];
-            foreach($this as $k){
-                $return[] = $k -> {$collection};
-            }
-
-            return $return;
-        }   
-
-
         return $this;
     }
 
+    /**
+     * Save all
+     */
     public function save(){
-        $this -> getModel() -> save();
+        $this -> persistStack('save');
     }
 
+    /**
+     * Sync
+     */
     public function sync($values){
-        $this -> getModel() -> setValue($values);
+        
+        foreach($values as $value){
+            $this -> add($value);
+        }
+
         $this -> save();
     }
 

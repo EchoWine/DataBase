@@ -129,9 +129,19 @@ class ORMTest extends TestCase{
 
 
         $book2 = Book::first();
+
+
+
+        $this -> assertEquals($author -> books -> count(),1);
         $author -> books -> remove($book2);
+        $this -> assertEquals($author -> books -> count(),0);
         $author -> books -> add($book);
+
+        $this -> assertEquals($author -> books -> count(),1);
         $author -> books[] = $book;
+
+        $this -> assertEquals($author -> books -> count(),1);
+        
         $author -> books -> save();
 
 

@@ -17,6 +17,19 @@ class Model extends FieldModel{
 	 * @var bool
 	 */
 	public $value_updated = false;
+	
+	/**
+	 * Check if value has the same class as defined in resolver
+	 *
+	 * @param ORM\Model
+	 *
+	 * @return bool
+	 */
+	public function checkInstanceValueClass($model){
+		if(get_class($model) != $this -> getSchema() -> getResolver() -> end -> model){
+			throw new \Exception($this -> getSchema() -> getResolver() -> end -> model." != ".get_class($model));
+		}
+	}
 
 	/**
 	 * Set value
@@ -99,12 +112,6 @@ class Model extends FieldModel{
 
 	}
 
-	public function checkInstanceValueClass($model){
-		if(get_class($model) != $this -> getSchema() -> getResolver() -> end -> model){
-			throw new \Exception($this -> getSchema() -> getResolver() -> end -> model." != ".get_class($model));
-		}
-	}
-
 	/**
 	 * Get the value
 	 *
@@ -114,8 +121,6 @@ class Model extends FieldModel{
 		
 
 		if(($this -> getValueOut() == null || $this -> getValueOut() -> count() == 0) && !$this -> value_updated){
-
-			
 
 			$this -> value_updated = true;
 			$this -> setValueByValueRaw(null);

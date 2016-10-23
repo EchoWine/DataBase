@@ -51,7 +51,7 @@ class Collection extends BaseCollection{
 
     public function persistStack($operation){
 
-        foreach((array)$this -> persist_stack[$operation] as $k){
+        foreach($this -> persist_stack[$operation] as $k){
             $k -> {$operation}();
         }
     }
@@ -70,7 +70,7 @@ class Collection extends BaseCollection{
     public function index($value){
         $this -> checkInstanceValueClass($value);
 
-        foreach($this as $n => $k){
+        foreach($this -> items as $n => $k){
             if($k -> equalTo($value)){
                 return $n;
             }
@@ -182,7 +182,7 @@ class Collection extends BaseCollection{
     public function __toString(){
         $collection = [];
 
-        foreach($this as $k){
+        foreach($this -> items as $k){
             $collection[] = $k -> toArray();
         }
 

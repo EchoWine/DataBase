@@ -5,20 +5,20 @@ namespace CoreWine\DataBase\ORM\Field\Relations\ToMany;
 use CoreWine\DataBase\ORM\Field\Field\Schema as FieldSchema;
 
 class Schema extends FieldSchema{
-	
-	/**
-	 * Name of model of Relation
-	 *
-	 * @var
-	 */
-	public $relation;
 
 	/**
 	 * Reference
 	 *
 	 * @var
 	 */
-	public $reference;
+	public $resolver;
+
+	/**
+	 * Tmp
+	 *
+	 * @var
+	 */
+	public $tmp;
 
 	/**
 	 * Include field in toArray operations
@@ -27,43 +27,6 @@ class Schema extends FieldSchema{
 	 */
 	public $enable_to_array = false;
 
-	protected $collection;
-
-
-	/**
-	 * Set relation
-	 *
-	 * @param String $relation
-	 */
-	public function relation($relation){
-		$this -> relation = $relation;
-		$this -> column = null;
-		return $this;
-	}
-
-	/**
-	 * Get relation
-	 */
-	public function getRelation(){
-		return $this -> relation;
-	}
-
-	/**
-	 * Set reference
-	 *
-	 * @param String $reference
-	 */
-	public function reference($reference){
-		$this -> reference = $reference;
-		return $this;
-	}
-
-	/**
-	 * Get reference
-	 */
-	public function getReference(){
-		return $this -> reference;
-	}
 
 	/**
 	 * Alter
@@ -75,23 +38,35 @@ class Schema extends FieldSchema{
 	/**
 	 * Construct
 	 */
-	public function __construct($relation = null,$name = null,$reference = null){
+	public function __construct($name = null,$resolver_end_model,$resolver_end_field){
 		$this -> name = $name;
 		$this -> label = $name;
-		$this -> relation($relation);
-		$this -> reference($reference);
+		$this -> tmp['resolver_end_model'] = $resolver_end_model;
+		$this -> tmp['resolver_end_field'] = $resolver_end_field;
 		return $this;
 	}
 
-	public function to($name,$relation_name){
-		$this -> name = $name;
-		$this -> label = $name;
-		$this -> collection = $relation_name;
+	/**
+	 * Get resolver
+	 */
+	public function getResolver(){
+		return $this -> resolver;
 	}
 
-	public function getCollection(){
-		return $this -> collection;
+	public function boot(){
+		$resolver = new Resolver($this -> getObjectClass(),$this -> tmp['resolver_end_model']);
+
+		
+		if($this -> tmp['resolver_end_field']){
+			$resolver -> end -> field_to_start = $resolver -> end -> schema -> getField($this -> tmp['resolver_end_field']);
+		}
+
+		if(!$resolver -> end -> field_to_start)
+			throw new \Exception($this -> getObjectClass().".".$this -> getName().": ToMany: field ".$this -> tmp['resolver_end_field']." cannot be null");
+		
+		$this -> resolver = $resolver;
 	}
+
 
 	/**
 	 * Resolve relations

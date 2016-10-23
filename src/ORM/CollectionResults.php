@@ -20,7 +20,7 @@ class CollectionResults extends Collection{
      */
     public function toArray(){
         $return = [];
-        foreach($this as $item){
+        foreach($this -> items as $item){
             if($item instanceof Model){
                 $return[] = $item -> toArray();
             }else{
@@ -60,7 +60,7 @@ class CollectionResults extends Collection{
 
     public function select($field_name){
         return $this -> map(function($val) use($field_name){
-            return $val[$field_name];
+            return is_object($val) ? $val -> $field_name : $val[$field_name];
         });
     }
 

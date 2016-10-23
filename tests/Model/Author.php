@@ -25,7 +25,7 @@ class Author extends Model{
         $schema -> string('name')
                 -> required();
 
-        $schema -> toMany(Book::class,'books','author_id');
+        $schema -> toMany('books',Book::class,'author');
     }
 }
 

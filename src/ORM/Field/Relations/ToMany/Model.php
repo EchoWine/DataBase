@@ -11,28 +11,6 @@ class Model extends FieldModel{
 	 */
 	public $has_value_raw = false;
 
-	/** 
-	 * List of all Model to save()
-	 */
-	public $value_to_save = [];
-
-	/** 
-	 * List of all Model to delete()
-	 */
-	public $value_to_remove = [];
-
-	/** 
-	 * List of all Model to delete()
-	 */
-	public $value_to_delete = [];
-
-	/**
-	 * Last value relation 
-	 *
-	 * @var mixed
-	 */
-	protected $last_value_relation = [];
-
 	/**
 	 * Is the value updated
 	 *
@@ -40,164 +18,27 @@ class Model extends FieldModel{
 	 */
 	public $value_updated = false;
 
-
 	/**
-	 * Add a model to collection if isn't already added
+	 * Check if value has the same class as defined in resolver
 	 *
-	 * @param ORM\Model $model
-	 */
-	public function add($model){
-
-		$model -> getFieldByColumn($this -> getSchema() -> getReference()) -> setValue($this -> getObjectModel());
-		$this -> addValue($model);
-		$this -> addValueToSave($model);
-	}
-
-	/**
-	 * Add model in value
+	 * @param ORM\Model
 	 *
-	 * @param ORM\Model $model
+	 * @return bool
 	 */
-	public function addValue($model){
-		$index = count($this -> value_out);
-		$this -> value_out[$index] = $model;
-	}
-
-	/**
-	 * Remove model in value
-	 *
-	 * @param ORM\Model $model
-	 */
-	public function removeValue($index){
-		unset($this -> value_out[$index]);
-	}
-
-	/**
-	 * Add to model to save
-	 *
-	 * @param ORM\Model $model
-	 */
-	public function addValueToSave($model){
-		$this -> value_to_save[$model -> getPrimaryField() -> getValue()] = $model;
-	}
-
-	/**
-	 * Get list of all model to save
-	 *
-	 * @return array ORM\Model
-	 */
-	public function getValueToSave(){
-		return $this -> value_to_save;
-	}
-
-	/**
-	 * Add to model to delete
-	 *
-	 * @param ORM\Model $model
-	 */
-	public function addValueToDelete($model){
-		$this -> value_to_delete[$model -> getPrimaryField() -> getValue()] = $model;
-	}
-
-	/**
-	 * Get list of all model to delete
-	 *
-	 * @return array ORM\Model
-	 */
-	public function getValueToDelete(){
-		return $this -> value_to_delete;
-	}
-
-
-	/**
-	 * Add to model to delete
-	 *
-	 * @param ORM\Model $model
-	 */
-	public function addValueToRemove($model){
-		$this -> value_to_remove[$model -> getPrimaryField() -> getValue()] = $model;
-	}
-
-	/**
-	 * Get list of all model to delete
-	 *
-	 * @return array ORM\Model
-	 */
-	public function getValueToRemove(){
-		return $this -> value_to_remove;
-	}
-
-	/**
-	 * Remove a model to collection if exist
-	 *
-	 * @param ORM\Model $model
-	 */
-	public function remove($model){
-
-        if($this -> getSchema() -> getCollection()){
-            return $this -> delete($model);
-        }   
-
-		foreach($this -> getValue() as $n => $_model){
-			if($model -> equalTo($_model)){
-				$_model -> getFieldByColumn($this -> getSchema() -> getReference()) -> setValue(null);
-				$this -> addValueToRemove($model);
-				$this -> removeValue($n);
-			}
+	public function checkInstanceValueClass($model){
+		if(get_class($model) != $this -> getSchema() -> getResolver() -> end -> model){
+			throw new \Exception($this -> getSchema() -> getResolver() -> end -> model." != ".get_class($model));
 		}
-	}
-
-	/**
-	 * Remove a model to collection if exist
-	 *
-	 * @param ORM\Model $model
-	 */
-	public function delete($model){
-
-        $schema = $this -> getSchema();
-		$collection = $schema -> getCollection();
-		$relation = $schema -> getRelation();
-        $ob = new $relation();
-        $ob -> {$collection} = $model;
-        $field = $relation::schema() -> getFieldByColumn($schema -> getReference());
-        $ob -> {$field -> getName()} = $this -> getObjectModel();
-        $model = $ob; 
-		foreach($this -> getValue() as $n => $_model){
-
-
-    		if($_model -> {$collection} -> equalTo($model -> {$collection}) && $_model -> {$field -> getName()} == $model -> {$field -> getName()}){
-    				
-				$this -> addValueToDelete($_model);
-				$this -> removeValue($n);
-    		}
-    	}
-    
-	}
-
-	/**
-	 * Save all model in collection
-	 */
-	public function save(){
-		foreach($this -> getValueToRemove() as $value){
-			$value -> save();
-		}
-
-		foreach($this -> getValueToDelete() as $value){
-			$value -> delete();
-		}
-
-		foreach($this -> getValueToSave() as $value){
-			$field = $this -> getSchema() -> getReference();
-			$value -> {$field} = $this -> getObjectModel() -> getPrimaryField() -> getValue();
-			$value -> save();
-		}
-
 	}
 
 	/**
 	 * Set value
 	 */
 	public function setValueOut($value = null){
+
+		if($value == null)
+			$value = [];
+
 
 		$c = new Collection($value);
 
@@ -227,65 +68,39 @@ class Model extends FieldModel{
 		
 		$value = [];
 
-		$relation = $this -> getSchema() -> getRelation();
-
-		if(isset($relations[$relation])){
-
-			foreach($relations[$relation] as $result){
-
-				foreach($result -> getFields() as $field){
-
-					if($field -> getSchema() -> getType() == 'to_one'){
-
-
-						if(!$this -> getObjectModel() -> getPrimaryField()){
-							print_r($this -> getObjectModel());
-							die('...');
-						}
-
-						# Of all results take only with a relation, with a column reference, with a value of primary == reference
-						if($this -> isThisRelation($field,$result)){
-							$value[$result -> getPrimaryField() -> getValue()] = $result;
-							$this -> value_updated = true;
-						}
-
-					}
-				}
-			}
-		}
-
 		return $value;
 	}
 
 
 	/**
-	 * Given the field and the result return if this is the relation
-	 * In order to connect two entities "toMany" i need to search all fields
-	 * Search for the field that have column name == $reference and have the value raw same as this primary value 
+	 * Retrieve a value out given a value raw
 	 *
-	 * @param $field is the field of the Model that maybe is connected
-	 * @param $result
+	 * @param mixed $value
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
-	public function isThisRelation($field,$result){
-		
-		# The name of column of relation
-		$reference = $this -> getSchema() -> getReference();
+	public function getValueOutByValueRaw($value){
 
-		# The primary field of this model
-		$model_primary = $this -> getObjectModel() -> getPrimaryField();
+		$resolver = $this -> getSchema() -> getResolver();
 
-		# Column name of the $field
-		$field_column = $field -> getSchema() -> getColumn();
-		
-		# The relational field of the result
-		$result_reference = $result -> getField($reference);
+		# Field start Model
+		$start_field_identifier = $this -> getObjectModel() -> getField($resolver -> start -> field_identifier -> getName());
 
-		# Example
-		# "author_id" () == "author_id" && 1 == 1
-		return $reference == $field_column && $model_primary -> getValueRaw() == $result_reference -> getValueRaw();					
+
+
+		# Get all result of resolver: Mid table
+		if(!$start_field_identifier -> getValue()){
+
+			$this -> value_updated = false;
+			return null;
+		}
+
+
+		return $resolver -> end -> model::where($resolver -> end -> field_to_start -> getColumn(),$start_field_identifier -> getValue()) -> get();
 	}
+
+
+
 
 
 	/**
@@ -294,23 +109,12 @@ class Model extends FieldModel{
 	 * @return mixed
 	 */
 	public function getValue(){
+
+		if(($this -> getValueOut() == null || $this -> getValueOut() -> count() == 0) && !$this -> value_updated){
+
+			$this -> value_updated = true;
+			$this -> setValueByValueRaw(null);
 		
-		if(!$this -> value_updated){
-			# The name of column of relation
-			$reference = $this -> getSchema() -> getReference();
-			
-			# The primary field of this model
-			$model_primary = $this -> getObjectModel() -> getPrimaryField();
-
-			if($model_primary -> getValue()){
-
-
-				
-				$v = $this -> getSchema() -> getRelation()::where($reference,$model_primary -> getValue()) -> get();
-				$this -> setValueOut($v);
-				$this -> value_updated = true;
-			}
-
 		}
 
 
