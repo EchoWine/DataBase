@@ -89,7 +89,7 @@ class Collection extends BaseCollection{
     public function has($value){
         $this -> checkInstanceValueClass($value);
 
-        return $this -> index($value) ? true : false;
+        return $this -> index($value) !== false ? true : false;
     }
 
 

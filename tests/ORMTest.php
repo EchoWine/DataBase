@@ -48,6 +48,11 @@ class ORMTest extends TestCase{
         OrderBook::truncate();
     }
 
+
+    public function log(){
+    	print_r(DB::log(true));
+    }
+
     public function testFields(){
 
         $book = new Book();
@@ -55,10 +60,12 @@ class ORMTest extends TestCase{
 
         $time = new \DateTime();
 
+
         $book -> save();
         $this -> assertEquals($book -> id,1);
 
         $book = Book::first();
+
 
         $this -> assertEquals($book -> created_at -> format('d-m-Y'),$time -> format('d-m-Y'));
         
