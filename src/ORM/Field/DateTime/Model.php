@@ -40,7 +40,8 @@ class Model extends FieldModel{
 	 */
 	public function getValueOutByValueRaw($value){
 
-		$value = DateTime::createFromFormat('Y-m-d H:i:s',$value);
+		if($value)
+			$value = DateTime::createFromFormat('Y-m-d H:i:s',$value);
 
 		return $value;
 	}
