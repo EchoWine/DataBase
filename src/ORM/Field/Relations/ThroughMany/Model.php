@@ -44,7 +44,8 @@ class Model extends FieldModel{
 
 		$c -> setModel($this);
 
-		$this -> value_out = $c;
+		
+		parent::setValueOut($c);
 	}
 
 

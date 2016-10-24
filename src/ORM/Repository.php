@@ -93,7 +93,7 @@ class Repository extends QueryBuilder{
 			# Fill all fields of ORM Object
 			foreach($return as $n => $model){
 				$model -> fillRawFromRepository($results[$n],$rep -> getObjectsORM());
-				$model -> setPersist();
+				$model -> setPersist(false);
 			}
 
 			return $return;

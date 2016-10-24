@@ -198,6 +198,9 @@ class Model{
 	 */
 	public function setPersist($persist = false){
 		$this -> persist = $persist;
+		foreach($this -> getFields() as $field){
+			$field -> setPersist($persist);
+		}
 	}
 
 	/**
@@ -606,7 +609,8 @@ class Model{
 
 		foreach($model -> getFields() as $name => $field){
 			if($this -> isField($name)){
-				$this -> getField($name) -> setValueCopied($field -> getValue());
+
+				$this -> getField($name) -> setValueCopied($field -> getValueRaw());
 			}
 		}
 
@@ -621,7 +625,8 @@ class Model{
 	public function getFieldsToPersist(){
 		$fields = [];
 		foreach($this -> getFields() as $name => $field){
-			$field -> checkPersist();
+
+
 			if($field -> getPersist()){
 				$fields[$name] = $field;
 			}
@@ -653,8 +658,8 @@ class Model{
 		$values = [];
 
 		foreach($fields as $name => $field){
-			if($field -> getSchema() -> insertIfValueEmpty($field -> getValue()))
-				$values[$name] = $field -> getValue();
+			if($field -> getSchema() -> insertIfValueEmpty($field -> getValueRaw()))
+				$values[$name] = $field -> getValueRaw();
 		}
 
 		return $values;
@@ -669,8 +674,8 @@ class Model{
 		$values = [];
 
 		foreach($fields as $name => $field){
-			if($field -> getSchema() -> updateIfValueEmpty($field -> getValue())){
-				$values[$name] = $field -> getValue();
+			if($field -> getSchema() -> updateIfValueEmpty($field -> getValueRaw())){
+				$values[$name] = $field -> getValueRaw();
 			}
 
 		}
@@ -744,7 +749,7 @@ class Model{
 			$this -> fireEvent('saved',[$this]);
 		}
 
-		$this -> setPersist(0);
+		$this -> setPersist(false);
 
 
 		$this -> persistStack('save');
@@ -813,7 +818,7 @@ class Model{
 		if($this -> getPersist())
 			return null;
 
-		$this -> setPersist(1);
+		$this -> setPersist(true);
 
 		$this -> wherePrimaryByRepository($this -> getRepository()) -> delete();
 

@@ -325,6 +325,15 @@ class SchemaBuilder{
 		return $this;
 	}
 
+	/**
+	 * Makes the column not nullable
+	 *
+	 * @return object $this
+	 */
+	public function notNull(){
+		$this -> schema -> setNull(false);
+		return $this;
+	}
 
 	/**
 	 * Add a SQL code everytime there is a delete

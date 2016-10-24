@@ -59,7 +59,7 @@ class Model extends FieldModel{
 
 		# $value -> {$field} Remove connection;
 
-		$this -> value_out = $value;
+		parent::setValueOut($value);
 	}
 
 	/**

@@ -66,7 +66,7 @@ class Schema{
 	 * If this value is set to false and the value of field sent in update operation is empty,
 	 * then this field will be removed in add/insert operation
 	 */
-	public $add_if_empty = false;
+	public $add_if_empty = true;
 
 	/**
 	 * Edit
@@ -81,7 +81,7 @@ class Schema{
 	 * If this value is set to false and the value of field sent in update operation is empty,
 	 * then this field will be removed in edit/update operation
 	 */
-	public $edit_if_empty = false;
+	public $edit_if_empty = true;
 
 	/**
 	 * Get
@@ -520,6 +520,9 @@ class Schema{
 		if(!$this -> required)
 			$col -> null();
 
+		if($this -> required)
+			$col -> notNull();
+
 		if($this -> primary)
 			$col -> primary();
 		
@@ -529,6 +532,8 @@ class Schema{
 	 * Check if the value is valid
 	 */
 	public function validate($value,$values,$model){
+
+		
 		if(is_object($value) || is_array($value))
 			return null;
 

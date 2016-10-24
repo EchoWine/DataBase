@@ -32,7 +32,7 @@ class Model{
 	/**
 	 * Persist
 	 */
-	public $persist;
+	public $persist = true;
 
 	/**
 	 * Alias
@@ -178,6 +178,7 @@ class Model{
 	 * @param mixed $value_raw
 	 */
 	public function setValueRaw($value_raw){
+		$this -> setPersist(true);
 		$this -> value_raw = $value_raw;
 	}
 
@@ -196,8 +197,8 @@ class Model{
 	 * @param mixed $value
 	 */
 	public function setValueOut($value_out = null){
+		$this -> setPersist(true);
 		$this -> value_out = $value_out;
-
 	}
 
 	/**
@@ -245,7 +246,6 @@ class Model{
 	public function getValueOutByValueRaw($value){
 		return $value;
 	}
-
 
 	/**
 	 * Set the value from repository
@@ -329,7 +329,7 @@ class Model{
 			$value = $value_copied;
 		}
 
-		$this -> setValue($value);
+		$this -> setValueRaw($value);
 	}
 
 	/**
