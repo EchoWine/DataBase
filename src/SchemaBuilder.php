@@ -144,6 +144,16 @@ class SchemaBuilder{
 	}
 
 	/**
+	 * Defines the column float
+	 *
+	 * @param string $name
+	 * @return object $this
+	 */
+	public function float($name,$length = 11){
+		return $this -> column($name,DB::SQL()::FLOAT,$length);
+	}
+
+	/**
 	 * Defines the column bigint
 	 *
 	 * @param string $name

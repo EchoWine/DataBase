@@ -16,7 +16,7 @@ class Builder{
 	/**
 	 * Count of actual istance
 	 */
-	public $count;
+	public $count = 0;
 
 	/**
 	 * Table
@@ -129,7 +129,9 @@ class Builder{
 	 */
 	public $parserResult = null;
 
-	public function __construct(){}
+	public function __construct(){
+		$this -> incCount();
+	}
 
 	/**
 	 * Set prepare
@@ -161,14 +163,13 @@ class Builder{
 	 * Clone 
 	 */
 	public function __clone(){
-		$this -> incCount();
 	}
 
 	/**
 	 * Increment the counter
 	 */
 	public function incCount(){
-		$this -> count = self::$counter++;
+		$this -> count = static::$counter++;
 	}
 
 	/**

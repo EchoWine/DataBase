@@ -216,6 +216,11 @@ class SQL{
 		return "$col $op $val";
 	}
 
+
+	public static function NOT_IN($col,$val){
+		return "$col NOT IN (".implode(",",$val).")";
+	}
+
 	public static function IN($col,$val){
 		return "$col IN (".implode(",",$val).")";
 	}

@@ -170,6 +170,24 @@ class QueryBuilderTest extends TestCase{
         })
         -> get();
 
+        DB::table('tab1 as r')
+        -> orWhere(function($q){
+            $q = $q -> orWhere('foo','123');
+            $q = $q -> orWhereIn('foo',['123']);
+            return $q;
+        })
+        -> where('id',function($q){
+            return DB::table('tab2')
+            -> select('count(*)') 
+            -> where('id','=',1)
+            -> orWhere(function($q){
+                $q = $q -> orWhere('foo','123');
+                return $q;
+            });
+        })
+        -> get();
+
+
         DB::table('tab1') -> count();
         DB::table('tab1') -> max('id');
         DB::table('tab1') -> min('id');

@@ -321,8 +321,8 @@ class QueryBuilder{
 	 * @param string $value optional value of the column
 	 * @return object $this
 	 */
-	public function where($fun_col_value,string $value_op = null,string $value = null){
-		return $this -> location($fun_col_value,$value_op,$value,'andWhere','SQL_WHERE_EXP');
+	public function where($fun_col_value,$value_op = null,$value = null,$prepare = true){
+		return $this -> location($fun_col_value,$value_op,$value,'andWhere','SQL_WHERE_EXP',$prepare);
 	}
 
 	/**
@@ -334,8 +334,19 @@ class QueryBuilder{
 	 * @param string $value optional value of the column
 	 * @return object $this
 	 */
-	public function orWhere($fun_col_value,string $value_op = null,string $value = null){
+	public function orWhere($fun_col_value,$value_op = null,$value = null){
 		return $this -> location($fun_col_value,$value_op,$value,'orWhere','SQL_WHERE_EXP');
+	}
+
+	/**
+	 * Add a condition WHERE NOT IN to the query where the results must have a value of the specific column present on the list of elements
+	 *
+	 * @param string $v name of the column
+	 * @param array $a array of accepted values
+	 * @return object clone of $this
+	 */
+	public function whereNotIn(string $v,array $a){
+		return $this -> locationNotIn($v,$a,'andWhere');
 	}
 
 	/**
@@ -519,7 +530,7 @@ class QueryBuilder{
 	 * @param bool $prepare
 	 * @return object $this
 	 */
-	public function location($fun_col_value,string $value_op = null,string $value = null,$builder,$sql = null,$prepare = true){
+	public function location($fun_col_value,$value_op = null,$value = null,$builder,$sql = null,$prepare = true){
 
 		# if Array
 		if(is_array($fun_col_value)){
@@ -537,7 +548,12 @@ class QueryBuilder{
 		if($value_op == null)
 			$value_op = Schema::getTable(DB::SQL()::REMOVE_ALIAS($this -> getBuilderTable())) -> getPrimary() -> getName();
 
-		return $this -> _location($fun_col_value,$value !== null ? $value_op : '=',$value !== null ? $value : $value_op,$builder,$prepare);
+
+		$param_1 = $fun_col_value;
+		$param_2 = $value !== null ? $value_op : '=';
+		$param_3 = $value !== null ? $value : $value_op;
+		
+		return $this -> _location($param_1,$param_2,$param_3,$builder,$prepare);
 	}
 
 	/**
@@ -546,6 +562,7 @@ class QueryBuilder{
 	 * @param Closure $fun function that contains advanced where
 	 * @param string $builder name of part builder that will be used to store result
 	 * @param string $sql name function that will be called to retrieve sql
+	 *
 	 * @return object $this
 	 */
 	public function locationClosure($fun,$builder,$sql){
@@ -573,6 +590,60 @@ class QueryBuilder{
 		return null;
 	}
 
+	public function valueSubQuery($fun){
+		if($fun instanceof Closure){
+			
+			$n = clone $this;
+			$n -> builder = new Builder();
+
+			$t = $this;
+			$n = $fun($n);
+			
+			if(!$n){
+				throw new \Exception("Closure must return QueryBuilder Object");
+			}
+
+			$t -> builder -> prepare = array_merge($t -> builder -> prepare,$n -> builder -> prepare);
+
+			$sql = "(".$n -> SQL_UNION().")";
+
+			return $sql;
+		}
+
+		return null;
+	}
+
+	public function subAndPrepareOne($value,$prepare = true){
+
+		$sub = $this -> valueSubQuery($value);
+		
+		if($sub)
+			return $sub;
+
+		if(!$prepare)
+			return $value;
+
+		return $this -> setPrepare($value);
+		
+	}
+
+
+	public function subAndPrepareMultiple($value,$prepare = true){
+
+		$sub = $this -> valueSubQuery($value);
+		
+		if($sub)
+			return $sub;
+
+		if(!$prepare)
+			return $value;
+
+		foreach($value as &$k)$k = $this -> setPrepare($k);
+
+		return $value;
+		
+	}
+
 	/**
 	 * Add a $builder condition to the query where the results must have a value of specific column.
 	 * The result may change with the change of the parameters
@@ -584,8 +655,11 @@ class QueryBuilder{
 	 * @param bool $prepare
 	 * @return object clone of $this
 	 */
-	public function _location(string $column,string $op,string $value,string $builder,$prepare = true){
-		return $this -> builderRaw(DB::SQL()::COL_OP_VAL($column,$op,$prepare ? $this -> setPrepare($value) : $value),$builder);
+	public function _location($column,$op,$value,$builder,$prepare = true){
+
+		$value = $this -> subAndPrepareOne($value,$prepare);
+
+		return $this -> builderRaw(DB::SQL()::COL_OP_VAL($column,$op,$value),$builder);
 	}
 
 	/**
@@ -596,9 +670,27 @@ class QueryBuilder{
 	 * @param string $builder
 	 * @return object clone of $this
      */
-	public function locationIn(string $v,array $a,$builder){
-		foreach($a as &$k)$k = $this -> setPrepare($k);
-		return $this -> builderRaw(DB::SQL()::IN($v,$a),$builder);
+	public function locationIn($column,$value,$builder){
+		
+		$value = $this -> subAndPrepareMultiple($value);
+
+		return $this -> builderRaw(DB::SQL()::IN($column,$value),$builder);
+
+	}
+
+	/**
+	 * Add a condition $builder NOT IN
+	 *
+	 * @param string $v name of the column
+	 * @param array $a array of value
+	 * @param string $builder
+	 * @return object clone of $this
+     */
+	public function locationNotIn($column,$value,$builder){
+
+		$value = $this -> subAndPrepareMultiple($value);
+
+		return $this -> builderRaw(DB::SQL()::NOT_IN($column,$value),$builder);
 
 	}
 	
@@ -610,8 +702,11 @@ class QueryBuilder{
 	 * @param string $builder
 	 * @return object clone of $this
      */
-	public function locationLike($v1,$v2,$builder){
-		return $this -> builderRaw(DB::SQL()::LIKE($v1,$this -> setPrepare($v2)),$builder);
+	public function locationLike($column,$value,$builder){
+			
+		$value = $this -> subAndPrepareOne($value);
+
+		return $this -> builderRaw(DB::SQL()::LIKE($column,$value),$builder);
 	}
 	
 	/**
@@ -621,8 +716,9 @@ class QueryBuilder{
 	 * @param string $builder
 	 * @return object clone of $this
      */
-	public function locationNull($v,$builder){
-		return $this -> builderRaw(DB::SQL()::IS_NULL($v),$builder);
+	public function locationNull($value,$builder){	
+		
+		return $this -> builderRaw(DB::SQL()::IS_NULL($value),$builder);
 	}
 
 	/**
@@ -632,8 +728,9 @@ class QueryBuilder{
 	 * @param string $builder
 	 * @return object clone of $this
      */
-	public function locationNotNull($v,$builder){
-		return $this -> builderRaw(DB::SQL()::IS_NOT_NULL($v),$builder);
+	public function locationNotNull($value,$builder){
+			
+		return $this -> builderRaw(DB::SQL()::IS_NOT_NULL($value),$builder);
 	}
 
 	/**
@@ -645,6 +742,10 @@ class QueryBuilder{
 	 * @return object clone of $this
      */
 	public function locationBetween($column,$values,$builder){
+
+		$values[0] = $this -> subAndPrepareOne($values[0]);
+		$values[1] = $this -> subAndPrepareOne($values[1]);
+
 		return $this -> builderRaw(DB::SQL()::BETWEEN($column,$values[0],$values[1]),$builder);
 	}
 
@@ -657,6 +758,10 @@ class QueryBuilder{
 	 * @return object clone of $this
      */
 	public function locationNotBetween($column,$values,$builder){
+
+		$values[0] = $this -> subAndPrepareOne($values[0]);
+		$values[1] = $this -> subAndPrepareOne($values[1]);
+
 		return $this -> builderRaw(DB::SQL()::NOT_BETWEEN($column,$values[0],$values[1]),$builder);
 	}
 

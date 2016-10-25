@@ -268,14 +268,14 @@ class DB{
 			$r = self::$con -> query($query);
 
 			if(self::$enableLog)
-				self::$log[] = "<i>".$query."</i>";
+				self::$log[] = $query;
 
 		}catch(PDOException $e){
-			throw new Exceptions\QueryException($e -> getMessage()."<br>".$query);
+			throw new Exceptions\QueryException($e -> getMessage()."\n\r".$query);
 		}
 
 		if(!$r)
-			throw new Exceptions\QueryException(self::$con -> errorInfo()[2]."<br>".$query);
+			throw new Exceptions\QueryException(self::$con -> errorInfo()[2]."\n\r".$query);
 		
 
 		return $r;
@@ -300,7 +300,6 @@ class DB{
 
 		$q = str_replace($k,$v,$query);
 
-
 		self::setLastQuery($q);
 
 		try{
@@ -309,10 +308,10 @@ class DB{
 			$r -> execute($a);
 
 			if(self::$enableLog)
-				self::$log[] = "<i>".$q."</i>";
+				self::$log[] = $q;
 
 		}catch(PDOException $e){
-			throw new Exceptions\QueryException($e -> getMessage()."<br>".$q);
+			throw new Exceptions\QueryException($e -> getMessage()."\n".$q."\n".$query);
 		}
 
 		if(!$r)
