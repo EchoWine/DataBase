@@ -12,10 +12,7 @@ class QueryBuilderTest extends TestCase{
 
     public function testQueryBuilder(){
 
-        DB::table('tab3_tab2') -> truncate();
-        DB::table('tab2') -> truncate();
-        DB::table('tab3') -> truncate();
-        DB::table('tab1') -> truncate();
+
 
         DB::schema('tab1',function($tab){
             $tab -> id();
@@ -36,6 +33,11 @@ class QueryBuilderTest extends TestCase{
         DB::schema('tab3_tab2') -> bigint('tab3_id') -> foreign('tab3','id') -> alter();
         DB::schema('tab3_tab2') -> bigint('tab2_id') -> foreign('tab2','id') -> alter();
         DB::schema('tab3_tab2') -> bigint('taxi') -> alter();
+
+        DB::table('tab3_tab2') -> truncate();
+        DB::table('tab2') -> truncate();
+        DB::table('tab3') -> truncate();
+        DB::table('tab1') -> truncate();
 
         $tab1_id = DB::table('tab1') -> insert([
             ['name' => md5(microtime()),'foo' => null],
@@ -87,6 +89,7 @@ class QueryBuilderTest extends TestCase{
             $q = $q -> where('tab3_tab2.taxi','=',5);
             return $q;
         },'tab2']) -> get();
+
 
 
         DB::table('tab2')
@@ -184,6 +187,16 @@ class QueryBuilderTest extends TestCase{
                 $q = $q -> orWhere('foo','123');
                 return $q;
             });
+        })
+        -> whereIn('foo',function($q){
+            return DB::table('tab2')
+            -> select('count(*)') 
+            -> where('id','=',1);
+        })
+        -> whereNotIn('foo',function($q){
+            return DB::table('tab2')
+            -> select('count(*)') 
+            -> where('id','=',1);
         })
         -> get();
 

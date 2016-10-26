@@ -55,17 +55,16 @@ class BasicTest extends TestCase{
     	# Check count
     	$this -> assertEquals(DB::count(DB::query("SELECT * FROM users")),2);
 
-    	# --------------------------------------------------------------------------
-
-    	DB::query("TRUNCATE users");
-
-    	# --------------------------------------------------------------------------
 
     	
     }
 
     public function testTransaction(){
     	
+        # --------------------------------------------------------------------------
+
+        DB::query("TRUNCATE users");
+
     	# --------------------------------------------------------------------------
 
     	# Transaction:success
@@ -79,6 +78,7 @@ class BasicTest extends TestCase{
     	DB::beginTransaction();
     	DB::execute("INSERT INTO users (username,password) VALUES (:u1,:p1)",[':u1' => 'admin',':p1' => 'admin']);
     	DB::rollback();
+
 
     	# Check
     	$this -> assertEquals(DB::count(DB::query("SELECT * FROM users")),1);
@@ -94,13 +94,14 @@ class BasicTest extends TestCase{
 		# Check
     	$this -> assertEquals(DB::count(DB::query("SELECT * FROM users")),1);
 
-    	# --------------------------------------------------------------------------
-
-    	DB::query("TRUNCATE users");
     }
 
     public function testRestore(){
     	
+        # --------------------------------------------------------------------------
+
+        DB::query("TRUNCATE users");
+
     	# --------------------------------------------------------------------------
 
     	# Insert some data

@@ -218,11 +218,17 @@ class SQL{
 
 
 	public static function NOT_IN($col,$val){
-		return "$col NOT IN (".implode(",",$val).")";
+		if(is_array($val))
+			$val = implode(",",$val);
+
+		return "$col NOT IN ($val)";
 	}
 
 	public static function IN($col,$val){
-		return "$col IN (".implode(",",$val).")";
+		if(is_array($val))
+			$val = implode(",",$val);
+
+		return "$col IN ($val)";
 	}
 
 	public static function LIKE($col,$val){

@@ -345,7 +345,7 @@ class QueryBuilder{
 	 * @param array $a array of accepted values
 	 * @return object clone of $this
 	 */
-	public function whereNotIn(string $v,array $a){
+	public function whereNotIn($v,$a){
 		return $this -> locationNotIn($v,$a,'andWhere');
 	}
 
@@ -356,7 +356,7 @@ class QueryBuilder{
 	 * @param array $a array of accepted values
 	 * @return object clone of $this
 	 */
-	public function whereIn(string $v,array $a){
+	public function whereIn($v,$a){
 		return $this -> locationIn($v,$a,'andWhere');
 	}
 
@@ -367,7 +367,7 @@ class QueryBuilder{
 	 * @param array $a array of accepted values
 	 * @return object clone of $this
 	 */
-	public function orWhereIn(string $v,array $a){
+	public function orWhereIn($v,$a){
 		return $this -> locationIn($v,$a,'orWhere');
 	}
 
@@ -1128,7 +1128,7 @@ class QueryBuilder{
 	 * @return object clone of $this
 	 */
 	public function havingBetween($column,$values){
-		return $this -> locationBetween($column,$values,'orHaving');
+		return $this -> locationBetween($column,$values,'andHaving');
 	}
 
 	/**
@@ -1150,7 +1150,7 @@ class QueryBuilder{
 	 * @return object clone of $this
 	 */
 	public function havingNotBetween($column,$values){
-		return $this -> locationNotBetween($column,$values,'orHaving');
+		return $this -> locationNotBetween($column,$values,'andHaving');
 	}
 
 	/**

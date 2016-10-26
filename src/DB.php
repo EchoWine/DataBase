@@ -48,7 +48,7 @@ class DB{
 	/**
 	 * Enable/Disable log
 	 */
-	public static $enableLog = false;
+	public static $log_enabled = false;
 
 	/**
 	 * SQL
@@ -58,7 +58,7 @@ class DB{
 	/**
 	 * Last query
 	 */
-	public static $lastQuery;
+	public static $last_query;
 	
 	/**
 	 * Create a new connection
@@ -104,7 +104,39 @@ class DB{
 
 		static::$log = [];
 	}
+
+	/**
+	 * Select the database
+	 *
+	 * @param string $db name of database
+	 */
+	public static function select(string $db){
+		if(self::getAlterSchema()){
+
+			self::query("CREATE DATABASE IF NOT EXISTS $db DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci");
+			
+		}
+		self::query("SET default_storage_engine=InnoDB");
+		
+		
+		self::query("SET GLOBAL connect_timeout=500;");
+		self::query("USE $db");
+		self::query("set names utf8");
+
+	}
 	
+	/**
+	 * Close the connection of the database
+	 */
+	public static function close(){
+		self::$con = NULL;
+	}
+	
+	/**
+	 * Check if the configuration is correct
+	 *
+	 * @param array $cfg
+	 */
 	public static function checkConfig($cfg){
 
 		switch($cfg['driver']){
@@ -136,82 +168,100 @@ class DB{
 	public static function SQL(){
 		return __NAMESPACE__."\\".self::$sql;
 	}
-	
-	/**
-	 * Start log
-	 */
-	public static function startLog(){
-		self::$enableLog = true;
-	}
+
 
 	/**
-	 * End log
-	 */
-	public static function stopLog(){
-		self::$enableLog = false;
-	}
-
-	/**
-	 * Get last query executed
+	 * Execute the query
 	 *
-	 * @return string
+	 * @param string $query SQL code
+	 * @return object PDO object
 	 */
-	public static function getLastQuery(){
-		return self::$lastQuery;
-	}
+	public static function query(string $query){
 
-	/**
-	 * Clear log
-	 */
-	public static function clearLog(){
-		self::$log = [];
-	}
+		self::setLastQuery($query);
 
+		try{
+			$result = self::$con -> query($query);
 
-	/**
-	 * Get log
-	 */
-	public static function log($clear = false){
-		$log = self::$log;
+			if(self::$log_enabled)
+				self::$log[] = $query;
 
-		if($clear)
-			self::clearLog();
+		}catch(PDOException $e){
+			throw new Exceptions\QueryException($e -> getMessage(),$query);
+		}
 
-		return $log;
-	}
-
-
-	/**
-	 * Get last query executed
-	 *
-	 * @return string
-	 */
-	public static function setLastQuery($query){
-		self::$lastQuery = $query;
-	}
-
-	/**
-	 * Select the database
-	 *
-	 * @param string $db name of database
-	 */
-	public static function select(string $db){
-		if(self::getAlterSchema())
-			self::query("CREATE DATABASE IF NOT EXISTS $db DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci");
+		if(!$result)
+			throw new Exceptions\QueryException(self::$con -> errorInfo()[2],$query);
 		
-		
-		self::query("SET GLOBAL connect_timeout=500;");
-		self::query("USE $db");
-		self::query("set names utf8");
 
+		return $result;
+	}
+
+	/**
+	 * Execute the query with specific values to filtrate
+	 *
+	 * @param string $query SQL code
+	 * @param array $params array of values
+	 * @return object PDO object
+	 */
+	public static function execute($query,$params){
+
+		self::setLastQuery($query);
+
+		try{
+
+			$result = self::$con -> prepare($query);
+
+			$result -> execute($params);
+
+			if(self::$log_enabled)
+				self::$log[] = $query;
+
+		}catch(PDOException $e){
+			throw new Exceptions\QueryException($e -> getMessage(),$query,$params);
+		}
+
+		if(!$result)
+			throw new Exceptions\QueryException(self::$con -> errorInfo()[2],$query,$params);
+		
+
+		return $result;
 	}
 	
 	/**
-	 * Close the connection of the database
+	 * Execute the query and return a result as array
+	 *
+	 * @param PDOStatement|SQL code $q PDO object
+	 * @return array result
 	 */
-	public static function close(){
-		self::$con = NULL;
+	public static function fetch($q,$nIndex = true){
+		
+		if(is_string($q))$q = DB::query($q);
+
+		return $nIndex ? $q -> fetchAll() : $q -> fetchAll(PDO::FETCH_ASSOC);
 	}
+
+	/**
+	 * Execute the query and return the first result
+	 *
+	 * @param PDOStatement|SQL code $q PDO object
+	 * @return array result
+	 */
+	public static function first($q){
+		return DB::fetch($q)[0];
+	}
+
+
+	/**
+	 * Count the results of a query
+	 *
+	 * @param PDOStatement $q PDO object
+	 * @return int number of result
+	 */
+	public static function count(PDOStatement $q){
+		return $q -> rowCount();
+	}
+
 	
 	/**
 	 * Return the name of the database
@@ -255,104 +305,56 @@ class DB{
 	}
 
 	/**
-	 * Execute the query
-	 *
-	 * @param string $query SQL code
-	 * @return object PDO object
+	 * Start log
 	 */
-	public static function query(string $query){
-
-		self::setLastQuery($query);
-
-		try{
-			$r = self::$con -> query($query);
-
-			if(self::$enableLog)
-				self::$log[] = $query;
-
-		}catch(PDOException $e){
-			throw new Exceptions\QueryException($e -> getMessage()."\n\r".$query);
-		}
-
-		if(!$r)
-			throw new Exceptions\QueryException(self::$con -> errorInfo()[2]."\n\r".$query);
-		
-
-		return $r;
+	public static function startLog(){
+		self::$log_enabled = true;
 	}
 
 	/**
-	 * Execute the query with specific values to filtrate
-	 *
-	 * @param string $query SQL code
-	 * @param array $a array of values
-	 * @return object PDO object
+	 * End log
 	 */
-	public static function execute(string $query,array $a){
-		
-		// Converto la query in una stringa leggibile
-		$r = array_reverse($a);
-		$k = array_keys($r);
-		$v = array_values($r);
-
-		foreach($v as &$e)
-			if(is_string($e))$e = "'{$e}'";
-
-		$q = str_replace($k,$v,$query);
-
-		self::setLastQuery($q);
-
-		try{
-
-			$r = self::$con -> prepare($query);
-			$r -> execute($a);
-
-			if(self::$enableLog)
-				self::$log[] = $q;
-
-		}catch(PDOException $e){
-			throw new Exceptions\QueryException($e -> getMessage()."\n".$q."\n".$query);
-		}
-
-		if(!$r)
-			throw new Exceptions\QueryException(self::$con -> errorInfo()[2]."<br>".$q);
-		
-
-		return $r;
-	}
-	
-	/**
-	 * Execute the query and return a result as array
-	 *
-	 * @param PDOStatement|SQL code $q PDO object
-	 * @return array result
-	 */
-	public static function fetch($q,$nIndex = true){
-		
-		if(is_string($q))$q = DB::query($q);
-
-		return $nIndex ? $q -> fetchAll() : $q -> fetchAll(PDO::FETCH_ASSOC);
+	public static function stopLog(){
+		self::$log_enabled = false;
 	}
 
 	/**
-	 * Execute the query and return the first result
+	 * Get last query executed
 	 *
-	 * @param PDOStatement|SQL code $q PDO object
-	 * @return array result
+	 * @return string
 	 */
-	public static function first($q){
-		return DB::fetch($q)[0];
+	public static function getLastQuery(){
+		return self::$last_query;
+	}
+
+	/**
+	 * Clear log
+	 */
+	public static function clearLog(){
+		self::$log = [];
 	}
 
 
 	/**
-	 * Count the results of a query
-	 *
-	 * @param PDOStatement $q PDO object
-	 * @return int number of result
+	 * Get log
 	 */
-	public static function count(PDOStatement $q){
-		return $q -> rowCount();
+	public static function log($clear = false){
+		$log = self::$log;
+
+		if($clear)
+			self::clearLog();
+
+		return $log;
+	}
+
+
+	/**
+	 * Get last query executed
+	 *
+	 * @return string
+	 */
+	public static function setLastQuery($query){
+		self::$last_query = $query;
 	}
 	
 	/**
