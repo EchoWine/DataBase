@@ -10,6 +10,21 @@ class Schema extends FieldSchema{
 	protected $dir_object = null;
 	protected $dir_model = null;
 
+	protected $thumbs = [];
+
+	public function thumb($name,$info){
+		$info['name'] = $name;
+		$this -> thumbs[$name] = $info;
+	}
+
+	public function getThumbs(){
+		return $this -> thumbs;
+	}
+
+	public function getThumb($name){
+		return isset($this -> thumbs[$name]) ? $this -> thumbs[$name] : null;
+	}
+
 	public function dirModel($dir_model){
 		$this -> dir_model = $dir_model;
 	}
