@@ -4,46 +4,63 @@
 	<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200' rel='stylesheet' type='text/css'>
 	<link rel='stylesheet' href='main.css'>
 	<script src='main.js'></script>
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css">
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
 </head>
 <body>
 
 	<a id='back_top' href='#top'>Back top</a>
 	<div id='top'></div>
-	<div id='container'>
+	<div id='menu'>
+		<ul>
+			<li>
+				<h4>DataBase</h4>
+				<ul>	
+					<li><a href='#db_intro'>Introduction</a></li>
+					<li><a href='#db_connection'>Connection</a></li>
+					<li><a href='#db_query'>Query</a></li>
+					<li><a href='#db_misc'>Miscellanous</a></li>
+					<li><a href='#db_transaction'>Transaction</a></li>
+					<li><a href='#db_restore'>Restore</a></li>
+				</ul>
+			</li>
+			<li>
+				<h4>Query Builder</h4>
+				<ul>
+					<li><a href='#querybuilder_intro'>Introduction</a></li>
+					<li><a href='#querybuilder_select'>Select</a></li>
+					<li><a href='#querybuilder_where'>Where</a></li>
+					<li><a href='#querybuilder_where'>Aggregates</a></li>
+					<li><a href='#querybuilder_mix'>Order, Group by, Limit</a></li>
+					<li><a href='#querybuilder_join'>Join</a></li>
+					<li><a href='#querybuilder_update'>Update</a></li>
+					<li><a href='#querybuilder_insert'>Insert</a></li>
+					<li><a href='#querybuilder_delete'>Delete</a></li>
+					<li><a href='#querybuilder_alter'>Alter</a></li>
+				</ul>
+			</li>
+			<li><h4>ORM</h4>
+				<ul>
+					<li><a href='#orm_model'>Model</a></li>
+				</ul>
+			</li>
+		</ul>
+	</div>
 
-		<h1>Documentation</h1>
-		<div id='menu'>
-			<ul>
-				<li><a href='#connection'>Connection</a></li>
-				<li><a href='#query'>Query</a></li>
-				<li><a href='#misc'>Miscellanous</a></li>
-				<li><a href='#transaction'>Transaction</a></li>
-				<li><a href='#restore'>Restore</a></li>
-				<li>
-					<a href='#querybuilder'>Query Builder</a>
-					<ul>
-						<li><a href='#querybuilder_select'>Select</a></li>
-						<li><a href='#querybuilder_where'>Where</a></li>
-						<li><a href='#querybuilder_where'>Aggregates</a></li>
-						<li><a href='#querybuilder_mix'>Order, Group by, Limit</a></li>
-						<li><a href='#querybuilder_join'>Join</a></li>
-						<li><a href='#querybuilder_update'>Update</a></li>
-						<li><a href='#querybuilder_insert'>Insert</a></li>
-						<li><a href='#querybuilder_delete'>Delete</a></li>
-						<li><a href='#querybuilder_alter'>Alter</a></li>
-					</ul>
-				</li>
-			</ul>
-		</div>
+<div id='container'>
+
+
 		<div id='content'>
 
-			<h2 id='database'>Introduction</h2>
-			<p>Introduction...</p>
+			<h1>Documentation</h1>
+
+			<h2 id='intro'>Introduction</h2>
+			<p>Currently it supports only MYSQL</p>
 
 			<h2 id='connection'>Connection</h2>
 			<p>In order to perform a connection you need to use the connect method with the following parameters. </p>
 
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::connect([
 					'driver' => 'mysql',
 					'hostname' => '127.0.0.1',
@@ -54,60 +71,59 @@
 					'restore' => 5,
 					'alter_schema' => true,
 				]);	
-
-			</code>
+			</code></pre></pre>
 			
 			<h2 id='transaction'>Query</h2>
 			<p>Raw query</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::query("SELECT * FROM user");
-			</code>
+			</code></pre>
 
 			<p>Query with binding param</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::execute("SELECT * FROM user WHERE name = :name",[':name' => 'mario']);
-			</code>
+			</code></pre>
 
 			<p>Fetch</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$q = DB::execute("SELECT * FROM user WHERE name = :name",[':name' => 'mario']);
 				$results = DB::fetch($q);
-			</code>
+			</code></pre>
 
 			<p>Count</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$q = DB::execute("SELECT * FROM user WHERE name = :name",[':name' => 'mario']);
 				$results = DB::count($q);
-			</code>
+			</code></pre>
 
 			<p>Get last insert id</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::getInsertID();
-			</code>
+			</code></pre>
 
 			<h2 id='transaction'>Transaction</h2>
 			<p>If you need you can perform a transaction. </p>
 			
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::beginTransaction();
 				DB::commit();
 				DB::rollback();
-			</code>
+			</code></pre>
 
 			<p>You can also use a closure. It will rollback if a will fail</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::transaction(function(){
 					DB::table('user') -> insert(['bonus' => 5]);
 					DB::table('user') -> where('bonus',3) -> delete();
 				});
-			</code>
+			</code></pre>
 
 			<h2 id='restore'>Restore System</h2>
 			<p>You can create a restore point, perform queries and then "rollback" to the restored point. </p>
 			<p>This system is different with transaction because there isn't a "transaction": you can rollback whenever you want. </p>
-			<p>The maximum number of restoring point is defined when connection is made. After this the oldest will deleted </p>
+			<p>The maximum number of restoring point is defined when connection is made. If the number of restoring point is reached, the oldest one will deleted </p>
 			
-			<code class='code'>
+			<pre><code class='code php'>
 				// Save a restore point
 				DB::save('user');
 
@@ -134,103 +150,103 @@
 
 				// Records recovered
 				print_r(DB::table('user') -> get());
-			</code>
+			</code></pre>
 
 			<h2 id='misc'>Miscellanous</h2>
 			<p>Print queries log</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::printLog();
-			</code>
+			</code></pre>
 
 			<p>Get information about server</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::getServerInfo();
-			</code>
+			</code></pre>
 
-			<h2 id='querybuilder'>QueryBuilder</h2>
+			<h2 id='querybuilder_intro'>QueryBuilder</h2>
 			<p>The Query Builder provides a simple interface for the creation and execution query</p>
 			
-			<p>To call the Query Builder you need to call <code class='code inline'>table</code> method.<br>
+			<p>To call the Query Builder you need to call <code class='code inline'>table</code></pre> method.<br>
 
 			<h3 id='querybuilder_select'>Select</h3>
 			
 			<p>Retrieving all the records from a table</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') -> get();
-			</code>
+			</code></pre>
 
 			<p>Retrieving one record from a table</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') -> first();
-			</code>
+			</code></pre>
 
 			<p>Retrieving one record from a table specifying a select clause</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') -> select(['name','surname']) -> first();
-			</code>
+			</code></pre>
 
 			<p>Retrieving all the records from multiple tables</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table(['user','session']) -> get();
-			</code>
+			</code></pre>
 
 			<p>Nesting select</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table(function(){
 
 					return DB::table('user');
 
 				}) -> get();
-			</code>
+			</code></pre>
 
 			<h3 id='querybuilder_where'>Where</h3>
 
 			<p>Where clause</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') -> where('id',1) -> first();
-			</code>
+			</code></pre>
 
 			<p>Where Like clause</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') -> whereLike('name','%a%') -> get();
-			</code>
+			</code></pre>
 
 			<p>Where IN clause</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') -> whereIn('id',[1,2,3]) -> get();
-			</code>
+			</code></pre>
 
 			<p>Where Null clause</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') -> whereNull('bonus') -> get();
-			</code>
+			</code></pre>
 
 			<p>Where Not Null clause</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') -> whereNotNull('bonus') -> get();
-			</code>
+			</code></pre>
 
 			<p>Where Raw</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table(['user','session']) -> whereRaw('user.id = session.uid') -> get();
-			</code>
+			</code></pre>
 
 
 			<p>OR Where clause</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') -> orWhere('id',1) -> orWhere('id',2)-> get();
-			</code>
+			</code></pre>
 
 			<p>
 				The same methods working with other OR clause: 
-				<code class='code inline'>orWhereLike</code> 
-				<code class='code inline'>orWhereIn</code> 
-				<code class='code inline'>orWhereNull</code> 
-				<code class='code inline'>orWhereRaw</code> 
+				<code class='code inline'>orWhereLike</code></pre> 
+				<code class='code inline'>orWhereIn</code></pre> 
+				<code class='code inline'>orWhereNull</code></pre> 
+				<code class='code inline'>orWhereRaw</code></pre> 
 			</p>
 
 			<p>Advanced where</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') 
 				-> where(function($q){
 
@@ -243,81 +259,81 @@
 
 				}) 
 				-> get();
-			</code>
+			</code></pre>
 
 			<p>Specifying operator</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') -> where('bonus','<',5) -> get();
-			</code>
+			</code></pre>
 
 			<h3 id='querybuilder_order'>Order by, Group by, Limit</h3>
 
 			<p>Order by desc</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') -> orderByDesc('user') -> get();
-			</code>
+			</code></pre>
 
 			<p>Order by asc, group by</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') 
 				-> orderByAsc('name') 
 				-> groupBy('bonus')
 				-> get();
-			</code>
+			</code></pre>
 
 			<p>Take, skip</p>
 			<p>Take 5 element and start from 3.
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('name') 
 				-> take(5)
 				-> skip(3)
 				-> get();
-			</code>
+			</code></pre>
 
 			<h3 id='querybuilder_aggregate'>Aggregate</h3>
 
 			<p>Using aggregates</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') -> count();
 				$result = DB::table('user') -> max('bonus');
 				$result = DB::table('user') -> min('bonus');
 				$result = DB::table('user') -> avg('bonus');
 				$result = DB::table('user') -> sum('bonus');
-			</code>
+			</code></pre>
 
 			<h3 id='querybuilder_join'>Join</h3>
 
 			<p>Retrieve all records from two tables joined</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				$result = DB::table('user') -> join('session','session.uid','user.id') -> get();
-			</code>
+			</code></pre>
 
 			<p>Specifying operator</p>
-			<code class='code'>
-				$result = DB::table('user') -> join('session','session.uid','=',user.id') -> get();
-			</code>
+			<pre><code class='code php'>
+				$result = DB::table('user') -> join('session','session.uid','=','user.id') -> get();
+			</code></pre>
 
 				
 			<p>
 				The same methods working with other join: 
-				<code class='code inline'>leftJoin</code> 
-				<code class='code inline'>rightJoin</code>
+				<code class='code inline'>leftJoin</code></pre> 
+				<code class='code inline'>rightJoin</code></pre>
 			</p>
 
 			<h3 id='querybuilder_update'>Update</h3>
 
 			<p>Update a single column</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::table('user') -> where('id',1) -> update('bonus',10);
-			</code>
+			</code></pre>
 
 			<p>Update multiple columns</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::table('user') -> where('id',1) -> update(['bonus' => 10,'malus' => 3]);
-			</code>
+			</code></pre>
 
 			<p>Update multiple condition</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::table('user') -> update([
 				[
 					['name','bonus'],
@@ -338,27 +354,27 @@
 					],
 					2015
 				]);
-			</code>
+			</code></pre>
 			Updates the column bonus = 10, malus = 1 and date = 2015, when the name is 'mario'.<br>
 			Updates the column bonus = 77, and date = 2015, when the name is 'marco'
 			etc...
 
 			<p>Increment/Decrement</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::table('user') -> where('id',1) -> increment('bonus');
 				DB::table('user') -> where('id',1) -> decrement('malus',10);
-			</code>
+			</code></pre>
 			<p>The default value of second parameter is 1	</p>
 
 			<h3 id='querybuilder_insert'>Insert</h3>
 
 			<p>Insert a new record</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::table('user') -> insert(['name' => 'mario','surname' => 'rossi']);
-			</code>
+			</code></pre>
 			
 			<p>Insert new records</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::table('user') -> insertMultiple(
 					['name','surname']
 					[
@@ -367,38 +383,73 @@
 						['luca','bianchi'],
 					]
 				);
-			</code>
+			</code></pre>
 
 			<p>Advanced insert</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::table('user') -> insertMultiple(['name','rossi'],function(){
 					return DB::table('reg') -> select(['name','surname']);
 				);
-			</code>
+			</code></pre>
 
 			<h3 id='querybuilder_delete'>Delete</h3>
 
 			<p>Delete records</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::table('user') -> where('bonus','<',5) -> delete();
-			</code>
+			</code></pre>
 			
 			<p>Truncate table</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::table('user') -> truncate();
-			</code>
+			</code></pre>
 
 
 
 			<h3 id='querybuilder_alter'>Alter</h3>
 
 			<p>Create a column if doesn't exists</p>
-			<code class='code'>
+			<pre><code class='code php'>
 				DB::table('user') -> column('bonus') -> type('string') -> alter();
-			</code>
+			</code></pre>
 
+			<h2 id='querybuilder_intro'>Model</h2>
+
+			<p>Define a Model</p>
+			<pre><code class='code php'>
+			
+				namespace CoreWine\DataBase\Test\Model;
+
+				use CoreWine\DataBase\ORM\Model;
+
+				class Author extends Model{
+
+					/**
+					 * Table name
+					 *
+					 * @var
+					 */
+					public static $table = 'authors';
+
+					/**
+					 * Set schema fields
+					 *
+					 * @param Schema $schema
+					 */
+					public static function fields($schema){
+
+						$schema -> id();
+
+						$schema -> string('name') -> required();
+
+						$schema -> toMany('books',Book::class,'author');
+					}
+				}
+
+			</code></pre>
 		</div>
 	</div>
 
+	<script>hljs.initHighlightingOnLoad();</script>
 </body>
 </html>

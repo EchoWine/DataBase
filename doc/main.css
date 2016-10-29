@@ -1,9 +1,11 @@
 
 #container{
+
 	max-width:800px;
 	min-width:300px;
 	margin:50px auto;
 }
+
 
 body{
 	color: #525252;
@@ -12,12 +14,12 @@ body{
 }
 
 a{
-	color: #f4645f;
+	color: #1976D2;
 	text-decoration:none;
 }
 
 a:hover{
-	color: #f1362f;
+	color: #2196F3;
 }
 
 
@@ -72,6 +74,9 @@ blockquote p:last-child {
 #menu{
 	font-size: 16px;
 	line-height: 1.5;
+	position:fixed;
+	padding-left:50px;
+	padding-top:0px;
 }
 
 #menu > ul > li > a{
@@ -79,13 +84,13 @@ blockquote p:last-child {
 }
 
 #menu li ul{
-	margin-left:40px;
+	margin-left:0px;
 }
 
-#menu li::before{
+#menu li a::before{
 	content: "# ";
 	margin-right: .25em;
-	color: #f4645f;
+	color: #1976D2;
 	opacity: .3;
 }
 
@@ -96,7 +101,7 @@ blockquote p:last-child {
 }
 
 #back_top{
-	background: #f4645f;
+	background: #1976D2;
 	color: #fff !important;
 	border-radius: 3px;
 	margin: 20px;
@@ -120,7 +125,7 @@ blockquote p:last-child {
 	position: absolute;
 	font-size: 28px;
 	top: 2px;
-	color: #f4645f;
+	color: #1976D2;
 	opacity: .6;
 }
 

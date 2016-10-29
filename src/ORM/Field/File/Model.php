@@ -35,11 +35,6 @@ class Model extends FieldModel{
 		return file_get_contents($filename);
 	}
 
-
-	public function getDirBase(){
-		return $this -> getSchema() -> getDirBase();
-	}
-
 	public function getDirObject(){
 		return $this -> getSchema() -> getDirObject();
 	}
@@ -61,8 +56,12 @@ class Model extends FieldModel{
 				if(!$this -> content)
 					return;
 				
+
+
+
 				$table = $model -> getSchema() -> getTable();
-				$destination = $this -> getFilePath();
+				$destination = $this -> file($this -> getValue());
+
 
 
 				$dir = dirname($destination);
@@ -75,6 +74,7 @@ class Model extends FieldModel{
 				if(!$move){
 					throw new \Exception("File not saved");
 				}
+
 
 				$thumb_destination = preg_replace('/\\.[^.\\s]{3,4}$/', '', $destination);
 
@@ -94,7 +94,7 @@ class Model extends FieldModel{
 	    $original_width = $arr_image_details[0];
 	    $original_height = $arr_image_details[1];
 
-	    if ($original_width > $original_height) {
+	    if($original_width > $original_height){
 	        $new_width = $thumb_width;
 	        $new_height = intval($original_height * $new_width / $original_width);
 	    }else{
@@ -133,21 +133,12 @@ class Model extends FieldModel{
 	    throw new \Exception("Error during creation of thumbnail");
 	}
 
-
-	public function getFilePath(){
-		return $this -> getDirBase().$this -> getDirObject().$this -> getDirModel($this -> getObjectModel()).$this -> getValue();
-	}
-
-	public function getFullPath(){
-		return $this -> getDirBase().$this -> getDirObject().$this -> getDirModel($this -> getObjectModel()).$this -> getValue();
-	}
-
 	public function removeExtension($filename){
 		return preg_replace('/\\.[^.\\s]{3,4}$/', '', $filename);
 	}
 
 	public function original(){
-		return $this -> getFullPath();
+		return $this -> web($this -> getValue());
 	}
 
 	public function thumb($name){
@@ -159,7 +150,15 @@ class Model extends FieldModel{
 		$thumb['ext'];
 		$end = $end."_".$name.".".$thumb['ext'];
 
-		return $this -> getDirBase().$this -> getDirObject().$this -> getDirModel($this -> getObjectModel()).$end;
+		return $this -> web($end);
+	}
+
+	public function web($file){
+		return $this -> getSchema() -> getPathWeb().$this -> getDirObject().$this -> getDirModel($this -> getObjectModel()).$file;
+	}
+
+	public function file($file){
+		return $this -> getSchema() -> getPathFile().$this -> getDirObject().$this -> getDirModel($this -> getObjectModel()).$file;
 	}
 
 	public function getValueToArray(){

@@ -23,33 +23,5 @@ code.parse = function(v){
 
 code.highlight = function(v){
 
-	v = v.replace(/'([^']*)'/g,"<span class='token string'>'$1'</span>");
-	v = v.replace(/"([^"]*)"/g,"<span class='token string'>\"$1\"</span>");
-
-	v = v.replace(
-		/(\w*)::/g,
-		"<span class='token scope'>$1</span>::"
-	);
-
-	v = v.replace(
-		/(->)/g,
-		"<span class='token symbol'>$1</span>"
-	);
-
-	v = v.replace(
-		/([\(\)\]\[])/g,
-		"<span class='token punctuation'>$1</span>"
-	);
-
-	v = v.replace(
-		/([0-9]{1,})(?=[^\w])/g,
-		"<span class='token number'>$1</span>"
-	);
-
-	v = v.replace(/\$(\w*)/g,"<span class='token variable'>&#36;$1</span>");
-	v = v.replace(
-		/\b(new|if|do|function|while|switch|for|foreach|as|continue|break|echo|return|array)(?=[^\w])/g,
-		"<span class='token keyword'>$1</span>"
-	);
 	return v;
 }

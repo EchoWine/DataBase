@@ -6,9 +6,20 @@ use CoreWine\DataBase\ORM\Field\Field\Schema as FieldSchema;
 
 class Schema extends FieldSchema{
 
-	protected $dir_base = null;
 	protected $dir_object = null;
 	protected $dir_model = null;
+
+	protected static $default_path_web = "";
+	protected static $default_path_file = "";
+
+
+	public static function setDefaultWebPath($dir){
+		self::$default_path_web = $dir;
+	}
+
+	public static function setDefaultFilePath($dir){
+		self::$default_path_file = $dir;
+	}
 
 	protected $thumbs = [];
 
@@ -27,10 +38,7 @@ class Schema extends FieldSchema{
 
 	public function dirModel($dir_model){
 		$this -> dir_model = $dir_model;
-	}
-
-	public function dirBase($dir_base){
-		$this -> dir_base = $dir_base;
+		return $this;
 	}
 
 	public function getDirModel($model){
@@ -41,10 +49,13 @@ class Schema extends FieldSchema{
 		return $this -> dir_object == null ? $this -> getObjectSchema() -> getTable()."/" : $this -> dir_object;
 	}
 
-	public function getDirBase(){
-		return $this -> dir_base == null ? "uploads/" : $this -> dir_base;
+	public function getPathFile(){
+		return self::$default_path_file;
 	}
 
+	public function getPathWeb(){
+		return self::$default_path_web;
+	}
 }
 
 ?>
