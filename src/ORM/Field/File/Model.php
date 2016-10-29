@@ -15,8 +15,14 @@ class Model extends FieldModel{
 			$filename = basename($url);
 		}
 
-		return $this -> setByContent(file_get_contents($url),$filename);
+		$content = @file_get_contents($url);
 
+		if($content === FALSE){
+			throw new \Exception("Failed to retrieve [Model\Field\File]: ".$url);
+		}
+
+		return $this -> setByContent($content,$filename);
+		
 	}
 
 
