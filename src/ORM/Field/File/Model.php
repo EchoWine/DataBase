@@ -25,6 +25,13 @@ class Model extends FieldModel{
 		
 	}
 
+	public function link($url){
+		if(file_exists($url)){
+			$basename = basename($url);
+			$this -> setValue($basename);
+		}	
+	}
+
 
 
 	public function setByContent($content,$filename){
@@ -160,11 +167,11 @@ class Model extends FieldModel{
 	}
 
 	public function web($file){
-		return $this -> getSchema() -> getPathWeb().$this -> getDirObject().$this -> getDirModel($this -> getObjectModel()).$file;
+		return $this -> getSchema() -> getPathWeb().$this -> getSchema() -> callFilesystem($this);
 	}
 
 	public function file($file){
-		return $this -> getSchema() -> getPathFile().$this -> getDirObject().$this -> getDirModel($this -> getObjectModel()).$file;
+		return $this -> getSchema() -> getPathFile().$this -> getSchema() -> callFilesystem($this);
 	}
 
 	public function getValueToArray(){

@@ -8,6 +8,7 @@ class Schema extends FieldSchema{
 
 	protected $dir_object = null;
 	protected $dir_model = null;
+	protected $filesystem;
 
 	protected static $default_path_web = "";
 	protected static $default_path_file = "";
@@ -36,17 +37,32 @@ class Schema extends FieldSchema{
 		return isset($this -> thumbs[$name]) ? $this -> thumbs[$name] : null;
 	}
 
+	public function filesystem($filesystem){
+		$this -> filesystem = $filesystem;
+	}
+
+	public function callFilesystem($model){
+		$c = $this -> filesystem;
+
+		$object = $model -> getObjectModel();
+
+		if($c === null){
+			return $this -> getObjectSchema() -> getTable()."/".$model -> id."/".$model -> getValue();
+		}
+
+		return $c($object);
+	}
 	public function dirModel($dir_model){
 		$this -> dir_model = $dir_model;
 		return $this;
 	}
 
 	public function getDirModel($model){
-		return $this -> dir_model == null ? $model -> id."/" : $this -> dir_model;
+		return $this -> dir_model == null ?  : $this -> dir_model;
 	}
 
 	public function getDirObject(){
-		return $this -> dir_object == null ? $this -> getObjectSchema() -> getTable()."/" : $this -> dir_object;
+		return $this -> dir_object == null ?  : $this -> dir_object;
 	}
 
 	public function getPathFile(){
