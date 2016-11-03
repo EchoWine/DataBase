@@ -47,7 +47,7 @@ class Schema extends FieldSchema{
 		$object = $model -> getObjectModel();
 
 		if($c === null){
-			return $this -> getObjectSchema() -> getTable()."/".$model -> id."/".$model -> getValue();
+			return $this -> getObjectSchema() -> getTable()."/".$object -> id."/".$model -> getValue();
 		}
 
 		return $c($object);
