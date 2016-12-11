@@ -100,6 +100,10 @@ class Model extends FieldModel{
 	    $original_width = $arr_image_details[0];
 	    $original_height = $arr_image_details[1];
 
+	    if($original_width == 0 || $original_height == 0){
+	    	return $source;
+	    }
+
 	    if($original_width > $original_height){
 	        $new_width = $thumb_width;
 	        $new_height = intval($original_height * $new_width / $original_width);
