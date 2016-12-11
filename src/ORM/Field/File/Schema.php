@@ -52,6 +52,8 @@ class Schema extends FieldSchema{
 
 		return $c($object);
 	}
+	
+
 	public function dirModel($dir_model){
 		$this -> dir_model = $dir_model;
 		return $this;

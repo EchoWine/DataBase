@@ -89,18 +89,11 @@ class Model extends FieldModel{
 				}
 
 
-				$thumb_destination = preg_replace('/\\.[^.\\s]{3,4}$/', '', $destination);
-
-				foreach($this -> getSchema() -> getThumbs() as $name => $info){
-					$this -> makeThumb($destination,$thumb_destination."_".$name.".".$info['ext'],$name,$info['width'],$info['height']);
-				}
-
-
 			}
 		];
 	}
 
-	public function makeThumb($source,$destination,$name,$thumb_width,$thumb_height){
+	public function makeThumb($source,$destination,$thumb_width,$thumb_height){
 
 	    $arr_image_details = getimagesize($source);
 
@@ -154,23 +147,33 @@ class Model extends FieldModel{
 		return $this -> web($this -> getValue());
 	}
 
-	public function thumb($name){
+	public function thumb($thumb_width,$thumb_height){
 
-		$thumb = $this -> getSchema() -> getThumb($name);
+		$orig = $this -> file();
 
-		$end = $this -> removeExtension($this -> getValue());
-		$thumb['name'];
-		$thumb['ext'];
-		$end = $end."_".$name.".".$thumb['ext'];
+		if(!file_exists($orig))
+			return $this -> getValue();
 
-		return $this -> web($end);
+		$file = $this -> removeExtension($orig);
+		$thumb = $file."_{$thumb_width}x{$thumb_height}.jpg";
+
+
+
+		if(!file_exists($thumb))
+			$this -> makeThumb($orig,$thumb,$thumb_width,$thumb_height);
+
+
+		$web = $this -> removeExtension($this -> web());
+		$web = $web."_{$thumb_width}x{$thumb_height}.jpg";
+
+		echo $web;
 	}
 
-	public function web($file){
+	public function web($file = null){
 		return $this -> getSchema() -> getPathWeb().$this -> getSchema() -> callFilesystem($this);
 	}
 
-	public function file($file){
+	public function file($file = null){
 		return $this -> getSchema() -> getPathFile().$this -> getSchema() -> callFilesystem($this);
 	}
 
