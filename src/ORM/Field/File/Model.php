@@ -180,11 +180,6 @@ class Model extends FieldModel{
 	public function getValueToArray(){
 		$r = [];
 
-		foreach($this -> getSchema() -> getThumbs() as $name => $thumb){
-
-			$r[$name] = $this -> thumb($name);
-		}
-
 		$r['original'] = $this -> original();
 
 		return $r;
