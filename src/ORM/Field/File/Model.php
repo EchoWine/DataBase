@@ -33,8 +33,15 @@ class Model extends FieldModel{
 	}
 
 
+	public function getFileNameParsed($filename){
+
+		return preg_replace('/\?.*/', '', $filename);
+
+	}
 
 	public function setByContent($content,$filename){
+
+		$filename = $this -> getFileNameParsed($filename);
 
 		# Check for resizing...
 		# Check for extension...
@@ -71,9 +78,8 @@ class Model extends FieldModel{
 				
 
 
-
 				$table = $model -> getSchema() -> getTable();
-				$destination = $this -> file($this -> getValue());
+				$destination = $this -> file();
 
 
 
@@ -81,8 +87,9 @@ class Model extends FieldModel{
 				if(!file_exists($dir))
 					mkdir($dir,0777,true);
 
-				$move = file_put_contents($destination,$this -> content);
 
+
+				$move = file_put_contents($destination,$this -> content);
 
 				if(!$move){
 					throw new \Exception("File not saved");
