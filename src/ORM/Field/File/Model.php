@@ -177,7 +177,7 @@ class Model extends FieldModel{
 		$web = $this -> removeExtension($this -> web());
 		$web = $web."_{$thumb_width}x{$thumb_height}.jpg";
 
-		echo $web;
+		return $web;
 	}
 
 	public function web($file = null){
