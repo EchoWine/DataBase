@@ -192,6 +192,12 @@ class Model{
 	public static function boot(){}
 
 	/**
+	 * Seed
+	 */
+	public static function seed(){}
+
+
+	/**
 	 * Set persist
 	 *
 	 * @return bool
@@ -236,6 +242,7 @@ class Model{
 			$field -> setObjectClass(static::class);
 		}
 
+
 		static::boot();
 
 		foreach(static::schema() -> getFields() as $field){
@@ -243,6 +250,10 @@ class Model{
 		}
 		
 		static::repository() -> alterSchema();
+
+
+		static::seed();
+
 
 		if(!$schema -> getPrimaryField())
 			throw new \Exception("Missing primary field in ".get_called_class());

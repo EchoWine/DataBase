@@ -226,6 +226,7 @@ class Repository extends QueryBuilder{
 			return;
 		
 		DB::schema($this -> getSchema() -> getTable(),function($table) use ($fields){
+			
 			foreach($fields as $name => $field){
 				$field -> alter($table);
 			}

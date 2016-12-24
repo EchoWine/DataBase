@@ -515,6 +515,7 @@ class Schema{
 	 * Set DB schema
 	 */
 	public function alter($table){
+
 		$col = $table -> string($this -> getColumn(),$this -> max_length);
 
 		if(!$this -> required)
