@@ -181,7 +181,7 @@ class Model extends FieldModel{
 	}
 
 	public function web($file = null){
-		return "/".$this -> getSchema() -> getPathWeb().$this -> getSchema() -> callFilesystem($this);
+		return $this -> getSchema() -> getPathWeb().$this -> getSchema() -> callFilesystem($this);
 	}
 
 	public function file($file = null){
