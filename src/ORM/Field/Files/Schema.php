@@ -1,6 +1,6 @@
 <?php
 
-namespace CoreWine\DataBase\ORM\Field\File;
+namespace CoreWine\DataBase\ORM\Field\Files;
 
 use CoreWine\DataBase\ORM\Field\Field\Schema as FieldSchema;
 
@@ -41,13 +41,13 @@ class Schema extends FieldSchema{
 		$this -> filesystem = $filesystem;
 	}
 
-	public function callFilesystem($model){
+	public function callFilesystem($model,$index){
 		$c = $this -> filesystem;
 
 		$object = $model -> getObjectModel();
 
 		if($c === null){
-			return $this -> getObjectSchema() -> getTable()."/".$object -> id."/".$this -> getName()."/".$model -> getValue();
+			return $this -> getObjectSchema() -> getTable()."/".$object -> id."/".$this -> getName()."/".$index;
 		}
 
 		return $c($object);
@@ -73,6 +73,16 @@ class Schema extends FieldSchema{
 
 	public function getPathWeb(){
 		return self::$default_path_web;
+	}
+	
+	/**
+	 * Alter
+	 */
+	public function alter($table){
+		$col = $table -> text($this -> getColumn(),$this -> getMaxLength());
+
+		if(!$this -> getRequired())
+			$col -> null();
 	}
 
 	public function validate($value,$values,$model){

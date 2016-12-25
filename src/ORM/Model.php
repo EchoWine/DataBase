@@ -68,7 +68,7 @@ class Model{
 	 * @var array
 	 */
 	public static $callable_to_repository = [
-		'leftJoin','rightJoin','join','select','all','first','wherePrimary','whereIn','where','count','first','orderBy','orderByDesc','orderByAsc'
+		'leftJoin','rightJoin','join','select','all','first','wherePrimary','whereIn','where','count','first','orderBy','orderByDesc','orderByAsc','take'
 	];
 
 	/**
@@ -793,7 +793,11 @@ class Model{
 
 		$repository = $this -> wherePrimaryByRepository($repository);
 
+		echo "update..";
 		foreach($fields as $name => $field){
+			
+			echo "field...";
+
 			$repository = $field -> editRepository($repository);
 		}
 

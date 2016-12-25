@@ -392,6 +392,8 @@ class Model{
 	 * @return Repository
 	 */
 	public function editRepository($repository){
+		echo $this -> getSchema() -> getColumn();
+		echo $this -> getValueRaw();
 		return $repository -> addUpdate($this -> getSchema() -> getColumn(),$this -> getValueRaw());
 	}
 

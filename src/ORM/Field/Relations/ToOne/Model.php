@@ -111,6 +111,7 @@ class Model extends FieldModel{
 	 */
 	public function getValueRaw(){
 		
+		# @debug
 		if(is_object($this -> value_raw)){
 			die("CoreWine\DataBase\ORM\Field\Relations\ToOne\Model: This is bad");
 		}
