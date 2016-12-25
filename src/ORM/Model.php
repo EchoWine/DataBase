@@ -793,11 +793,9 @@ class Model{
 
 		$repository = $this -> wherePrimaryByRepository($repository);
 
-		echo "update..";
+		
 		foreach($fields as $name => $field){
 			
-			echo "field...";
-
 			$repository = $field -> editRepository($repository);
 		}
 
