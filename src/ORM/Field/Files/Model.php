@@ -147,8 +147,6 @@ class Model extends FieldModel{
 		}
 
 		$this -> setValue(array_merge($this -> getValue(),[$filename]));
-
-		print_r($this -> getValue());
 	}
 
 	public function getDirObject(){
