@@ -94,6 +94,20 @@ class Collection extends BaseCollection{
 
 
     /**
+     * Get value (with pivots)
+     *
+     * @param ORM\Model $value
+     *
+     * @return boolean
+     */
+    public function get($value){
+        $this -> checkInstanceValueClass($value);
+        $index = $this -> index($value);
+
+        return $index !== false ? $this -> items[$index] : false;
+    }
+
+    /**
      * Add a model
      *
      * @param ORM\Model $value
