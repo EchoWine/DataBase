@@ -64,5 +64,9 @@ class Model extends FieldModel{
 		
 	}
 
+	public function getValueToArray(){
+		return $this -> getValue() -> format('Y-m-d');
+	}
+
 }
 ?>
