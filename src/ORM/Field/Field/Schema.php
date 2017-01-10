@@ -527,6 +527,8 @@ class Schema{
 		if($this -> primary)
 			$col -> primary();
 		
+		if($this -> default)
+			$col -> default();
 	}
 
 	/**

@@ -20,7 +20,19 @@ class Schema extends FieldSchema{
 	 * Alter
 	 */
 	public function alter($table){
-		$table -> int($this -> getColumn(),$this -> getMaxLength());
+		$col = $table -> int($this -> getColumn(),$this -> getMaxLength());
+
+		if(!$this -> required)
+			$col -> null();
+
+		if($this -> required)
+			$col -> notNull();
+
+		if($this -> primary)
+			$col -> primary();
+		
+		if($this -> default)
+			$col -> default();
 	}
 
 }
