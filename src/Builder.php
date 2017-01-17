@@ -113,6 +113,11 @@ class Builder{
 	 * Prepare
 	 */
 	public $prepare = [];
+			
+	/**
+	 * set
+	 */
+	public $set = [];
 	
 	/**
 	 * last joined table

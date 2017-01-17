@@ -1239,6 +1239,18 @@ class QueryBuilder{
 	}
 
 	/**
+	 * Set data to insert
+	 *
+	 * @param array $data
+	 *
+	 * @return $this
+	 */
+	public function set($data = []){
+		$this -> builder -> set = $data;
+		return $this;
+	}
+	
+	/**
 	 * Execute the query and insert a record
 	 *
 	 * @param array $data array of elements to insert (name column => value column)
@@ -1259,7 +1271,7 @@ class QueryBuilder{
 			$t -> builder -> prepare = array_merge($t -> builder -> prepare,$c -> builder -> prepare);
 
 			$values = DB::SQL()::VALUES($c -> SQL_UNION());
-			$columns = DB::SQL()::INSERT_COLUMNS($c -> builder -> select);
+			$columns = DB::SQL()::INSERT_COLUMNS($t -> builder -> set);
 
 		}else{
 
@@ -1281,6 +1293,7 @@ class QueryBuilder{
 			$columns = DB::SQL()::INSERT_COLUMNS(array_keys($data[0]));
 		}
 		
+		echo (DB::SQL()::INSERT($this -> getBuilderTable(),$columns,$values,$ignore));
 		$q = DB::count($t -> query(DB::SQL()::INSERT($this -> getBuilderTable(),$columns,$values,$ignore)));
 
 		# Get all ID from last Insert
