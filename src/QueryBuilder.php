@@ -1293,7 +1293,6 @@ class QueryBuilder{
 			$columns = DB::SQL()::INSERT_COLUMNS(array_keys($data[0]));
 		}
 		
-		echo (DB::SQL()::INSERT($this -> getBuilderTable(),$columns,$values,$ignore));
 		$q = DB::count($t -> query(DB::SQL()::INSERT($this -> getBuilderTable(),$columns,$values,$ignore)));
 
 		# Get all ID from last Insert
