@@ -31,8 +31,8 @@ class Schema extends FieldSchema{
 		if($this -> primary)
 			$col -> primary();
 		
-		if($this -> default)
-			$col -> default();
+		if($this -> default !== null)
+			$col -> default($this -> default);
 	}
 
 }
