@@ -84,13 +84,17 @@ class Pagination{
 		if($to >= $count)
 			$to = $count;
 
+		$from = $skip + 1;
 
+		if($from >= $count)
+			$from = $count;
+		
 		$this -> setCount($count);
 		$this -> setShow($show);
 		$this -> setPage($page);
 		$this -> setPages($pages);
 		$this -> setSkip($skip);
-		$this -> setFrom($skip + 1);
+		$this -> setFrom($from);
 		$this -> setTo($to);
 
 
